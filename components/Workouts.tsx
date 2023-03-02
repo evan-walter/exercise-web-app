@@ -27,6 +27,7 @@ export default function Workouts() {
       ))}
       <div className='flex w-full justify-between'>
         <input
+          className='px-2'
           type='text'
           value={workoutTitle}
           onChange={(e) => setWorkoutTitle(e.target.value)}
@@ -35,7 +36,7 @@ export default function Workouts() {
           className='rounded-full border border-amber-500 px-4 py-2'
           onClick={() => handleCreateWorkout()}
         >
-          Create New Task
+          Create New Workout
         </button>
       </div>
     </div>
