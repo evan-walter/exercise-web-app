@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import { ThemeProvider } from 'next-themes'
 import ThemeButton from '/components/ThemeButton'
-import Workouts from '/components/Workouts'
+import IntervalGroups from '/components/IntervalGroups'
 
 export default function Home() {
   return (
@@ -16,10 +16,12 @@ export default function Home() {
       <ThemeProvider attribute='class'>
         <main className='container mx-auto h-screen w-full max-w-2xl'>
           <div className='flex justify-between py-5'>
-            <div className='py-2 pr-1 text-2xl font-semibold'>Workouts</div>
+            <div className='py-2 pr-1 text-2xl font-semibold'>
+              Interval Groups
+            </div>
             <ThemeButton />
           </div>
-          <Workouts />
+          <IntervalGroups />
         </main>
       </ThemeProvider>
     </>
