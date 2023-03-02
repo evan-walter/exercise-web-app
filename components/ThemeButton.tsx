@@ -17,7 +17,7 @@ export default function ThemeButton() {
           onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
         >
           <svg
-            className='mx-auto h-6 w-6'
+            className='mx-auto h-7 w-7'
             fill='none'
             stroke='currentColor'
             viewBox='0 0 24 24'
