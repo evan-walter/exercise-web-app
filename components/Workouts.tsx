@@ -1,38 +1,43 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { createId } from '@paralleldrive/cuid2'
 
 export default function Workouts() {
-  return <WorkoutGroup title='Default Workout Group' />
-}
+  const [workoutTitle, setWorkoutTitle] = useState('Default Workout Title')
+  const [workouts, setWorkouts] = useState<any>([])
 
-interface WorkoutGroupProps {
-  title: string
-}
+  function handleCreateWorkout() {
+    setWorkouts([...workouts, { id: createId(), title: workoutTitle }])
+  }
 
-export function WorkoutGroup({ title }: WorkoutGroupProps) {
-  const [workouts, setWorkouts] = useState([
-    <Workout title='Default Workout Title' />,
-  ])
+  function handleDeleteWorkout(currentWorkoutId: string) {
+    setWorkouts([
+      ...workouts.filter((workout: any) => workout.id !== currentWorkoutId),
+    ])
+  }
 
   return (
     <div className='flex flex-col gap-y-4'>
-      <h2>{title}</h2>
-      <button
-        onClick={() =>
-          setWorkouts([...workouts, <Workout title='Default Workout Title' />])
-        }
-        className='w-fit rounded-full border border-amber-500 py-2 px-4'
-      >
-        Create New Workout
-      </button>
-      {workouts}
+      {workouts.map((workout: any) => (
+        <div key={workout.id} className='flex justify-between'>
+          <div>{workout.title}</div>
+          <button onClick={() => handleDeleteWorkout(workout.id)}>
+            Delete
+          </button>
+        </div>
+      ))}
+      <div className='flex w-full justify-between'>
+        <input
+          type='text'
+          value={workoutTitle}
+          onChange={(e) => setWorkoutTitle(e.target.value)}
+        />
+        <button
+          className='rounded-full border border-amber-500 px-4 py-2'
+          onClick={() => handleCreateWorkout()}
+        >
+          Create New Task
+        </button>
+      </div>
     </div>
   )
-}
-
-interface WorkoutProps {
-  title: string
-}
-
-export function Workout({ title }: WorkoutProps) {
-  return <div>{title}</div>
 }
