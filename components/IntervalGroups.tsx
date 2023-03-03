@@ -24,7 +24,7 @@ export default function IntervalGroups() {
       <div className='flex flex-col gap-y-4'>
         {groups.map((group: any) => (
           <div key={group.id} className=''>
-            <IntervalGroup initialGroupTitle={group.title} />
+            <IntervalGroup group={group} groups={groups} setGroups={setGroups} />
           </div>
         ))}
         {isCreatingGroup ? (
@@ -61,11 +61,13 @@ export default function IntervalGroups() {
 }
 
 interface IntervalGroupProps {
-  initialGroupTitle: string
+  group: any
+  groups: any
+  setGroups: any
 }
 
-export function IntervalGroup({ initialGroupTitle }: IntervalGroupProps) {
-  const [updatedGroupTitle, setUpdatedGroupTitle] = useState(initialGroupTitle)
+export function IntervalGroup({ group, groups, setGroups }: IntervalGroupProps) {
+  const [updatedGroupTitle, setUpdatedGroupTitle] = useState(group.title)
   const [isCreatingInterval, setIsCreatingInterval] = useState(false)
   const [initialIntervalTitle, setInitialIntervalTitle] = useState('')
   const [initialHours, setInitialHours] = useState(0)
@@ -73,6 +75,14 @@ export function IntervalGroup({ initialGroupTitle }: IntervalGroupProps) {
   const [initialSeconds, setInitialSeconds] = useState(0)
   const [initialRepeat, setInitialRepeat] = useState(0)
   const [intervals, setIntervals] = useState<any>([])
+
+  function handleDeleteGroup(currentGroupId: string) {
+    setGroups([
+      ...groups.filter(
+        (group: any) => group.id !== currentGroupId
+      ),
+    ])
+  }
 
   function handleCreateInterval() {
     setIsCreatingInterval((prevS) => !prevS)
@@ -100,7 +110,7 @@ export function IntervalGroup({ initialGroupTitle }: IntervalGroupProps) {
         <button className='w-fit rounded-full bg-green-300 py-2 px-4 dark:bg-green-600'>
           Start
         </button>
-        <button className='ml-auto w-fit rounded-full'>
+        <button className='ml-auto w-fit rounded-full' onClick={()=>handleDeleteGroup(group.id)}>
           <svg
             xmlns='http://www.w3.org/2000/svg'
             fill='none'
