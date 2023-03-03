@@ -32,17 +32,15 @@ export default function IntervalGroups() {
           </div>
         ))}
         {isCreatingGroup ? (
-          <div className='my-4 rounded-lg bg-slate-200 p-2 dark:bg-slate-800'>
-            <div className='text-xl font-semibold text-pink-900 dark:text-pink-100'>
+          <div className='my-4 rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
+            <div className='mb-2 text-xl font-semibold text-pink-900 dark:text-pink-100'>
               New Group
             </div>
-            <div className='mt-2 mb-4 flex flex-col gap-y-4'>
-              <Input
-                name={'title'}
-                theState={initialGroupTitle}
-                setTheState={setInitialGroupTitle}
-              />
-            </div>
+            <Input
+              name={'title'}
+              theState={initialGroupTitle}
+              setTheState={setInitialGroupTitle}
+            />
           </div>
         ) : null}
       </div>
@@ -105,12 +103,12 @@ export function IntervalGroup({
   }
 
   return (
-    <div className='my-4 rounded-lg bg-slate-200 p-2 dark:bg-slate-800'>
-      <div className='mb-4 flex w-full items-center gap-x-4'>
-        <div className='my-2 text-xl font-semibold text-pink-900 dark:text-pink-100'>
+    <div className='my-4 rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
+      <div className='mb-2 flex w-full flex-wrap items-center gap-x-4'>
+        <div className='whitespace-nowrap text-xl font-semibold text-pink-900 dark:text-pink-100'>
           {updatedGroupTitle}
         </div>
-        <div>Repeat (Input)</div>
+        <div className='w-fit'>Repeat</div>
         <button className='w-fit rounded-full bg-green-300 py-2 px-4 dark:bg-green-600'>
           Start
         </button>
@@ -118,20 +116,7 @@ export function IntervalGroup({
           className='ml-auto w-fit rounded-full'
           onClick={() => handleDeleteGroup(group.id)}
         >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            fill='none'
-            viewBox='0 0 24 24'
-            strokeWidth={1.5}
-            stroke='currentColor'
-            className='h-6 w-6'
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              d='M6 18L18 6M6 6l12 12'
-            />
-          </svg>
+          <X />
         </button>
       </div>
       {intervals.map((interval: any) => (
@@ -148,8 +133,8 @@ export function IntervalGroup({
       ))}
       {isCreatingInterval ? (
         <>
-          <div className='text-lg font-semibold'>New Interval</div>
-          <div className='mt-2 mb-4 flex flex-col gap-y-4'>
+          <div className='mb-2 text-lg font-semibold'>New Interval</div>
+          <div className='mb-4 flex flex-col gap-y-4'>
             <Input
               name={'title'}
               theState={initialIntervalTitle}
@@ -269,5 +254,24 @@ export function Input({ name, theState, setTheState }: InputProps) {
         {`${name.charAt(0).toUpperCase()}${name.slice(1)}`}
       </label>
     </div>
+  )
+}
+
+export function X() {
+  return (
+    <svg
+      xmlns='http://www.w3.org/2000/svg'
+      fill='none'
+      viewBox='0 0 24 24'
+      strokeWidth={1.5}
+      stroke='currentColor'
+      className='h-6 w-6'
+    >
+      <path
+        strokeLinecap='round'
+        strokeLinejoin='round'
+        d='M6 18L18 6M6 6l12 12'
+      />
+    </svg>
   )
 }
