@@ -11,10 +11,10 @@ export default function IntervalGroups() {
 
 export function Intervals() {
   const [isCreatingInterval, setIsCreatingInterval] = useState(false)
-  const [title, setTitle] = useState('')
-  const [h, setH] = useState(0)
-  const [m, setM] = useState(0)
-  const [s, setS] = useState(0)
+  const [initialTitle, setInitialTitle] = useState('')
+  const [initialHours, setInitialHours] = useState(0)
+  const [initialMinutes, setInitialMinutes] = useState(0)
+  const [initialSeconds, setInitialSeconds] = useState(0)
   const [intervals, setIntervals] = useState<any>([])
 
   function handleCreateInterval() {
@@ -22,7 +22,13 @@ export function Intervals() {
     if (isCreatingInterval) {
       setIntervals((prevIntervals: []) => [
         ...prevIntervals,
-        { id: createId(), title: title, h: h, m: m, s: s },
+        {
+          id: createId(),
+          title: initialTitle,
+          h: initialHours,
+          m: initialMinutes,
+          s: initialSeconds,
+        },
       ])
     }
   }
@@ -32,33 +38,57 @@ export function Intervals() {
       {intervals.map((interval: any) => (
         <div
           key={interval.id}
-          className='flex flex-col gap-y-4 rounded-lg bg-slate-200 p-3 dark:bg-slate-700'
+          className='my-4 flex flex-col gap-y-4 rounded-lg bg-slate-200 p-3 dark:bg-slate-700'
         >
-          <div className='flex items-center justify-between border-b border-slate-300 pb-3 dark:border-slate-600'>
-            <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
-              {interval.title}
-            </div>
-            
-          </div>
+          <Interval
+            title={interval.title}
+            h={interval.h}
+            m={interval.m}
+            s={interval.s}
+          />
         </div>
       ))}
       {isCreatingInterval ? (
         <>
           <div className='text-xl font-semibold'>New Interval</div>
-          <div className='flex flex-col gap-x-2'>
-            <Input name={'title'} theState={title} setTheState={setTitle} />
-            <Input name={'hours'} theState={h} setTheState={setH} />
-            <Input name={'minutes'} theState={m} setTheState={setM} />
-            <Input name={'seconds'} theState={s} setTheState={setS} />
+          <div className='mt-2 mb-4 flex flex-col gap-y-4'>
+            <Input
+              name={'title'}
+              theState={initialTitle}
+              setTheState={setInitialTitle}
+            />
+            <Input
+              name={'hours'}
+              theState={initialHours}
+              setTheState={setInitialHours}
+            />
+            <Input
+              name={'minutes'}
+              theState={initialMinutes}
+              setTheState={setInitialMinutes}
+            />
+            <Input
+              name={'seconds'}
+              theState={initialSeconds}
+              setTheState={setInitialSeconds}
+            />
           </div>
         </>
       ) : null}
       <button
-        className='my-2 w-fit rounded-full bg-blue-300 py-2 px-4 dark:bg-blue-600'
+        className='w-fit rounded-full bg-blue-300 py-2 px-4 dark:bg-blue-600'
         onClick={() => handleCreateInterval()}
       >
         Create Interval
       </button>
+      {isCreatingInterval ? (
+        <button
+          className='ml-4 w-fit rounded-full bg-amber-300 py-2 px-4 dark:bg-amber-600'
+          onClick={() => setIsCreatingInterval(false)}
+        >
+          Cancel
+        </button>
+      ) : null}
     </div>
   )
 }
@@ -69,9 +99,37 @@ interface InputProps {
   setTheState: any
 }
 
+interface IntervalProps {
+  title: string
+  h: number
+  m: number
+  s: number
+}
+
+export function Interval({ title, h, m, s }: IntervalProps) {
+  const [updatedTitle, setUpdatedTitle] = useState(title)
+
+  function formatTimeUnit(timeUnit: number) {
+    return `${timeUnit >= 10 ? timeUnit.toString() : `0${timeUnit.toString()}`}`
+  }
+
+  return (
+    <div className='flex items-center justify-between border-b border-slate-300 pb-3 dark:border-slate-600'>
+      <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
+        {title}
+      </div>
+      <div className='w-60 text-2xl'>
+        <span className=''>{formatTimeUnit(h)} : </span>
+        <span className=''>{formatTimeUnit(m)} : </span>
+        <span className=''>{formatTimeUnit(s)}</span>
+      </div>
+    </div>
+  )
+}
+
 export function Input({ name, theState, setTheState }: InputProps) {
   return (
-    <div className='relative my-2 flex flex-col'>
+    <div className='relative flex flex-col'>
       <input
         name={name}
         className='peer rounded-lg bg-slate-100 px-2 pt-5 pb-3 shadow-md dark:bg-slate-700'
