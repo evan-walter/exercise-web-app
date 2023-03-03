@@ -2,19 +2,76 @@ import { useState, useRef } from 'react'
 import { createId } from '@paralleldrive/cuid2'
 
 export default function IntervalGroups() {
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false)
+  const [initialGroupTitle, setInitialGroupTitle] = useState('')
+  const [groups, setGroups] = useState<any>([])
+
+  function handleCreateGroup() {
+    setIsCreatingGroup((prevS) => !prevS)
+    if (isCreatingGroup) {
+      setGroups((prevGroups: []) => [
+        ...prevGroups,
+        {
+          id: createId(),
+          title: initialGroupTitle,
+        },
+      ])
+    }
+  }
+
   return (
     <>
-      <Intervals />
+      <div className='flex flex-col gap-y-4'>
+        {groups.map((group: any) => (
+          <div key={group.id} className=''>
+            <IntervalGroup initialGroupTitle={group.title} />
+          </div>
+        ))}
+        {isCreatingGroup ? (
+          <div className='my-4 rounded-lg bg-slate-200 p-2 dark:bg-slate-800'>
+            <div className='text-xl font-semibold text-pink-900 dark:text-pink-100'>
+              New Group
+            </div>
+            <div className='mt-2 mb-4 flex flex-col gap-y-4'>
+              <Input
+                name={'title'}
+                theState={initialGroupTitle}
+                setTheState={setInitialGroupTitle}
+              />
+            </div>
+          </div>
+        ) : null}
+      </div>
+      <button
+        className='w-fit rounded-full bg-pink-300 py-2 px-4 dark:bg-pink-600'
+        onClick={() => handleCreateGroup()}
+      >
+        Create Group
+      </button>
+      {isCreatingGroup ? (
+        <button
+          className='ml-4 w-fit rounded-full bg-amber-300 py-2 px-4 dark:bg-amber-600'
+          onClick={() => setIsCreatingGroup(false)}
+        >
+          Cancel
+        </button>
+      ) : null}{' '}
     </>
   )
 }
 
-export function Intervals() {
+interface IntervalGroupProps {
+  initialGroupTitle: string
+}
+
+export function IntervalGroup({ initialGroupTitle }: IntervalGroupProps) {
+  const [updatedGroupTitle, setUpdatedGroupTitle] = useState(initialGroupTitle)
   const [isCreatingInterval, setIsCreatingInterval] = useState(false)
-  const [initialTitle, setInitialTitle] = useState('')
+  const [initialIntervalTitle, setInitialIntervalTitle] = useState('')
   const [initialHours, setInitialHours] = useState(0)
   const [initialMinutes, setInitialMinutes] = useState(0)
   const [initialSeconds, setInitialSeconds] = useState(0)
+  const [initialRepeat, setInitialRepeat] = useState(0)
   const [intervals, setIntervals] = useState<any>([])
 
   function handleCreateInterval() {
@@ -24,7 +81,7 @@ export function Intervals() {
         ...prevIntervals,
         {
           id: createId(),
-          title: initialTitle,
+          title: initialIntervalTitle,
           h: initialHours,
           m: initialMinutes,
           s: initialSeconds,
@@ -34,11 +91,36 @@ export function Intervals() {
   }
 
   return (
-    <div className='rounded-lg bg-slate-200 p-2 dark:bg-slate-800'>
+    <div className='my-4 rounded-lg bg-slate-200 p-2 dark:bg-slate-800'>
+      <div className='mb-4 flex w-full items-center gap-x-4'>
+        <div className='my-2 text-xl font-semibold text-pink-900 dark:text-pink-100'>
+          {updatedGroupTitle}
+        </div>
+        <div>Repeat (Input)</div>
+        <button className='w-fit rounded-full bg-green-300 py-2 px-4 dark:bg-green-600'>
+          Start
+        </button>
+        <button className='ml-auto w-fit rounded-full'>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            fill='none'
+            viewBox='0 0 24 24'
+            strokeWidth={1.5}
+            stroke='currentColor'
+            className='h-6 w-6'
+          >
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              d='M6 18L18 6M6 6l12 12'
+            />
+          </svg>
+        </button>
+      </div>
       {intervals.map((interval: any) => (
         <div
           key={interval.id}
-          className='my-4 flex flex-col gap-y-4 rounded-lg bg-slate-200 p-3 dark:bg-slate-700'
+          className='my-4 flex flex-col gap-y-4 rounded-lg bg-slate-100 p-3 dark:bg-slate-700'
         >
           <Interval
             title={interval.title}
@@ -50,12 +132,12 @@ export function Intervals() {
       ))}
       {isCreatingInterval ? (
         <>
-          <div className='text-xl font-semibold'>New Interval</div>
+          <div className='text-lg font-semibold'>New Interval</div>
           <div className='mt-2 mb-4 flex flex-col gap-y-4'>
             <Input
               name={'title'}
-              theState={initialTitle}
-              setTheState={setInitialTitle}
+              theState={initialIntervalTitle}
+              setTheState={setInitialIntervalTitle}
             />
             <Input
               name={'hours'}
@@ -107,22 +189,38 @@ interface IntervalProps {
 }
 
 export function Interval({ title, h, m, s }: IntervalProps) {
-  const [updatedTitle, setUpdatedTitle] = useState(title)
+  const [updatedIntervalTitle, setUpdatedIntervalTitle] = useState(title)
 
   function formatTimeUnit(timeUnit: number) {
     return `${timeUnit >= 10 ? timeUnit.toString() : `0${timeUnit.toString()}`}`
   }
 
   return (
-    <div className='flex items-center justify-between border-b border-slate-300 pb-3 dark:border-slate-600'>
-      <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
-        {title}
-      </div>
-      <div className='w-60 text-2xl'>
+    <div className='flex flex-wrap-reverse items-center gap-4'>
+      <div className='text-2xl'>
         <span className=''>{formatTimeUnit(h)} : </span>
         <span className=''>{formatTimeUnit(m)} : </span>
         <span className=''>{formatTimeUnit(s)}</span>
       </div>
+      <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
+        {updatedIntervalTitle}
+      </div>
+      <button className='ml-auto w-fit rounded-full'>
+        <svg
+          xmlns='http://www.w3.org/2000/svg'
+          fill='none'
+          viewBox='0 0 24 24'
+          strokeWidth={1.5}
+          stroke='currentColor'
+          className='h-6 w-6'
+        >
+          <path
+            strokeLinecap='round'
+            strokeLinejoin='round'
+            d='M6 18L18 6M6 6l12 12'
+          />
+        </svg>
+      </button>
     </div>
   )
 }
