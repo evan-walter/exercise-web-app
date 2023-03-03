@@ -140,10 +140,9 @@ export function IntervalGroup({
           className='my-4 flex flex-col gap-y-4 rounded-lg bg-slate-100 p-3 dark:bg-slate-700'
         >
           <Interval
-            title={interval.title}
-            h={interval.h}
-            m={interval.m}
-            s={interval.s}
+            interval={interval}
+            intervals={intervals}
+            setIntervals={setIntervals}
           />
         </div>
       ))}
@@ -192,21 +191,22 @@ export function IntervalGroup({
   )
 }
 
-interface InputProps {
-  name: string
-  theState: string | number
-  setTheState: any
-}
-
 interface IntervalProps {
-  title: string
-  h: number
-  m: number
-  s: number
+  interval: any
+  intervals: any
+  setIntervals: any
 }
 
-export function Interval({ title, h, m, s }: IntervalProps) {
-  const [updatedIntervalTitle, setUpdatedIntervalTitle] = useState(title)
+export function Interval({ interval, intervals, setIntervals }: IntervalProps) {
+  const [updatedIntervalTitle, setUpdatedIntervalTitle] = useState(
+    interval.title
+  )
+
+  function handleDeleteInterval(currentIntervalId: string) {
+    setIntervals([
+      ...intervals.filter((interval: any) => interval.id !== currentIntervalId),
+    ])
+  }
 
   function formatTimeUnit(timeUnit: number) {
     return `${timeUnit >= 10 ? timeUnit.toString() : `0${timeUnit.toString()}`}`
@@ -215,14 +215,17 @@ export function Interval({ title, h, m, s }: IntervalProps) {
   return (
     <div className='flex flex-wrap-reverse items-center gap-4'>
       <div className='text-2xl'>
-        <span className=''>{formatTimeUnit(h)} : </span>
-        <span className=''>{formatTimeUnit(m)} : </span>
-        <span className=''>{formatTimeUnit(s)}</span>
+        <span className=''>{formatTimeUnit(interval.h)} : </span>
+        <span className=''>{formatTimeUnit(interval.m)} : </span>
+        <span className=''>{formatTimeUnit(interval.s)}</span>
       </div>
       <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
         {updatedIntervalTitle}
       </div>
-      <button className='ml-auto w-fit rounded-full'>
+      <button
+        className='ml-auto w-fit rounded-full'
+        onClick={() => handleDeleteInterval(interval.id)}
+      >
         <svg
           xmlns='http://www.w3.org/2000/svg'
           fill='none'
@@ -240,6 +243,12 @@ export function Interval({ title, h, m, s }: IntervalProps) {
       </button>
     </div>
   )
+}
+
+interface InputProps {
+  name: string
+  theState: string | number
+  setTheState: any
 }
 
 export function Input({ name, theState, setTheState }: InputProps) {
