@@ -45,14 +45,14 @@ export default function IntervalGroups() {
         ) : null}
       </div>
       <button
-        className='mt-4 w-fit rounded-full bg-pink-300 py-2 px-4 font-semibold dark:bg-pink-600'
+        className='mt-4 w-fit rounded-full bg-pink-600 py-2 px-4 font-semibold text-white'
         onClick={() => handleCreateGroup()}
       >
         Create Group
       </button>
       {isCreatingGroup ? (
         <button
-          className='ml-4 mt-4 w-fit rounded-full bg-amber-300 py-2 px-4 font-semibold dark:bg-amber-600'
+          className='ml-4 mt-4 w-fit rounded-full bg-amber-600 py-2 px-4 font-semibold text-white'
           onClick={() => setIsCreatingGroup(false)}
         >
           Cancel
@@ -109,7 +109,7 @@ export function IntervalGroup({
           {updatedGroupTitle}
         </div>
         <div className='w-fit'>Repeat</div>
-        <button className='w-fit rounded-full bg-green-300 py-2 px-4 font-semibold dark:bg-green-600'>
+        <button className='w-fit rounded-full bg-green-600 py-2 px-4 font-semibold text-white'>
           Start
         </button>
         <button
@@ -159,14 +159,14 @@ export function IntervalGroup({
         </>
       ) : null}
       <button
-        className='w-fit rounded-full bg-blue-300 py-2 px-4 font-semibold dark:bg-blue-600'
+        className='w-fit rounded-full bg-blue-600 py-2 px-4 font-semibold text-white'
         onClick={() => handleCreateInterval()}
       >
         Create Interval
       </button>
       {isCreatingInterval ? (
         <button
-          className='ml-4 w-fit rounded-full bg-amber-300 py-2 px-4 font-semibold dark:bg-amber-600'
+          className='ml-4 w-fit rounded-full bg-amber-600 py-2 px-4 font-semibold text-white'
           onClick={() => setIsCreatingInterval(false)}
         >
           Cancel

@@ -14,7 +14,7 @@ export default function Home() {
       </Head>
 
       <ThemeProvider attribute='class'>
-        <main className='container mx-auto h-screen w-full max-w-2xl'>
+        <main className='container mx-auto min-h-screen w-full max-w-2xl'>
           <div className='flex justify-between py-5'>
             <div className='py-2 pr-1 text-2xl font-semibold'>
               Interval Groups
@@ -23,6 +23,7 @@ export default function Home() {
           </div>
           <IntervalGroups />
         </main>
+        <footer className='h-screen'></footer>
       </ThemeProvider>
     </>
   )
