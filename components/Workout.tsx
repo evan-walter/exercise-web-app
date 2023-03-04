@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react'
 import { createId } from '@paralleldrive/cuid2'
 
 export default function Workout() {
-  const [workoutTitle, setWorkoutTitle] = useState('Workout')
   const [isCreatingInterval, setIsCreatingInterval] = useState(false)
   const [initialIntervalTitle, setInitialIntervalTitle] = useState('')
   const [initialIntervalHours, setInitialIntervalHours] = useState(0)
@@ -28,6 +27,16 @@ export default function Workout() {
     }
   }
 
+  function handleDeleteInterval(currentIntervalId: string) {
+    setIntervals([
+      ...intervals.filter((interval: any) => interval.id !== currentIntervalId),
+    ])
+  }
+
+  function formatTimeUnit(timeUnit: number) {
+    return `${timeUnit >= 10 ? timeUnit.toString() : `0${timeUnit.toString()}`}`
+  }
+
   useEffect(() => {
     setIsThereANonZeroInterval(
       intervals.filter(
@@ -49,7 +58,7 @@ export default function Workout() {
       <div className='rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
         <div className='mb-2 flex w-full flex-wrap items-center gap-x-6'>
           <div className='whitespace-nowrap text-xl font-semibold text-pink-900 dark:text-pink-100'>
-            {workoutTitle}
+            Workout
           </div>
           <div className='w-fit'>Repeat</div>
         </div>
@@ -58,11 +67,22 @@ export default function Workout() {
             key={interval.id}
             className='my-4 flex flex-col gap-y-4 rounded-lg bg-slate-100 p-3 dark:bg-slate-700'
           >
-            <Interval
-              interval={interval}
-              intervals={intervals}
-              setIntervals={setIntervals}
-            />
+            <div className='flex flex-wrap-reverse items-center gap-4'>
+              <div className='text-2xl'>
+                <span>{formatTimeUnit(interval.h)} : </span>
+                <span>{formatTimeUnit(interval.m)} : </span>
+                <span>{formatTimeUnit(interval.s)}</span>
+              </div>
+              <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
+                {interval.title}
+              </div>
+              <button
+                className='ml-auto w-fit rounded-full font-semibold'
+                onClick={() => handleDeleteInterval(interval.id)}
+              >
+                <X />
+              </button>
+            </div>
           </div>
         ))}
         {isCreatingInterval ? (
@@ -107,45 +127,6 @@ export default function Workout() {
           </button>
         ) : null}
       </div>
-    </div>
-  )
-}
-
-interface IntervalProps {
-  interval: any
-  intervals: any
-  setIntervals: any
-}
-
-export function Interval({ interval, intervals, setIntervals }: IntervalProps) {
-  const [updatedInterval, setUpdatedInterval] = useState(interval)
-
-  function handleDeleteInterval(currentIntervalId: string) {
-    setIntervals([
-      ...intervals.filter((interval: any) => interval.id !== currentIntervalId),
-    ])
-  }
-
-  function formatTimeUnit(timeUnit: number) {
-    return `${timeUnit >= 10 ? timeUnit.toString() : `0${timeUnit.toString()}`}`
-  }
-
-  return (
-    <div className='flex flex-wrap-reverse items-center gap-4'>
-      <div className='text-2xl'>
-        <span>{formatTimeUnit(interval.h)} : </span>
-        <span>{formatTimeUnit(interval.m)} : </span>
-        <span>{formatTimeUnit(interval.s)}</span>
-      </div>
-      <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
-        {updatedInterval.title}
-      </div>
-      <button
-        className='ml-auto w-fit rounded-full font-semibold'
-        onClick={() => handleDeleteInterval(interval.id)}
-      >
-        <X />
-      </button>
     </div>
   )
 }

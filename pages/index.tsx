@@ -16,7 +16,9 @@ export default function Home() {
       <ThemeProvider attribute='class'>
         <main className='container mx-auto min-h-screen w-full max-w-2xl'>
           <div className='flex justify-between py-5'>
-            <div className='py-2 pr-1 text-2xl font-semibold'>Workout</div>
+            <div className='py-2 pr-1 text-2xl font-semibold'>
+              Exercise Web App
+            </div>
             <ThemeButton />
           </div>
           <Workout />
