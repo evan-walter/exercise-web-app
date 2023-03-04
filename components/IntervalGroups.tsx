@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { createId } from '@paralleldrive/cuid2'
 
 export default function IntervalGroups() {
@@ -73,12 +73,14 @@ export function IntervalGroup({
   groups,
   setGroups,
 }: IntervalGroupProps) {
+  let countDown = useRef()
+
   const [updatedGroupTitle, setUpdatedGroupTitle] = useState(group.title)
   const [isCreatingInterval, setIsCreatingInterval] = useState(false)
   const [initialIntervalTitle, setInitialIntervalTitle] = useState('')
-  const [initialHours, setInitialHours] = useState(0)
-  const [initialMinutes, setInitialMinutes] = useState(0)
-  const [initialSeconds, setInitialSeconds] = useState(0)
+  const [initialIntervalHours, setInitialIntervalHours] = useState(0)
+  const [initialIntervalMinutes, setInitialIntervalMinutes] = useState(0)
+  const [initialIntervalSeconds, setInitialIntervalSeconds] = useState(0)
   const [initialRepeat, setInitialRepeat] = useState(0)
   const [intervals, setIntervals] = useState<any>([])
 
@@ -94,9 +96,9 @@ export function IntervalGroup({
         {
           id: createId(),
           title: initialIntervalTitle,
-          h: initialHours,
-          m: initialMinutes,
-          s: initialSeconds,
+          h: initialIntervalHours,
+          m: initialIntervalMinutes,
+          s: initialIntervalSeconds,
         },
       ])
     }
@@ -142,18 +144,18 @@ export function IntervalGroup({
             />
             <Input
               name={'hours'}
-              theState={initialHours}
-              setTheState={setInitialHours}
+              theState={initialIntervalHours}
+              setTheState={setInitialIntervalHours}
             />
             <Input
               name={'minutes'}
-              theState={initialMinutes}
-              setTheState={setInitialMinutes}
+              theState={initialIntervalMinutes}
+              setTheState={setInitialIntervalMinutes}
             />
             <Input
               name={'seconds'}
-              theState={initialSeconds}
-              setTheState={setInitialSeconds}
+              theState={initialIntervalSeconds}
+              setTheState={setInitialIntervalSeconds}
             />
           </div>
         </>
@@ -183,9 +185,7 @@ interface IntervalProps {
 }
 
 export function Interval({ interval, intervals, setIntervals }: IntervalProps) {
-  const [updatedIntervalTitle, setUpdatedIntervalTitle] = useState(
-    interval.title
-  )
+  const [updatedInterval, setUpdatedInterval] = useState(interval)
 
   function handleDeleteInterval(currentIntervalId: string) {
     setIntervals([
@@ -205,7 +205,7 @@ export function Interval({ interval, intervals, setIntervals }: IntervalProps) {
         <span>{formatTimeUnit(interval.s)}</span>
       </div>
       <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
-        {updatedIntervalTitle}
+        {updatedInterval.title}
       </div>
       <button
         className='ml-auto w-fit rounded-full font-semibold'
