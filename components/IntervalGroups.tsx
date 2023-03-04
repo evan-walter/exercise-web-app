@@ -6,6 +6,14 @@ export default function IntervalGroups() {
   const [initialGroupTitle, setInitialGroupTitle] = useState('')
   const [groups, setGroups] = useState<any>([])
 
+  // let countDown = useRef<number>(0)
+
+  // function handleCountDown() {
+  //   countDown.current = setInterval(() => {
+
+  //   })
+  // }
+
   function handleCreateGroup() {
     setIsCreatingGroup((prevS) => !prevS)
     if (isCreatingGroup) {
@@ -19,9 +27,26 @@ export default function IntervalGroups() {
     }
   }
 
+  function isUserAbleToStartWorkout() {
+    let result = groups.filter(
+      (group: any) => group.h > 0 || group.m > 0 || group.s > 0
+    )
+
+    let result2 = groups
+
+    console.log(result2)
+
+    return false
+  }
+
   return (
     <>
       <div className='flex flex-col gap-y-4'>
+        {isUserAbleToStartWorkout() ? (
+          <button className='mb-2 w-fit rounded-full bg-green-600 py-2 px-4 text-lg font-semibold text-white'>
+            Start Workout
+          </button>
+        ) : null}
         {groups.map((group: any) => (
           <div key={group.id}>
             <IntervalGroup
@@ -48,7 +73,7 @@ export default function IntervalGroups() {
         className='mt-4 w-fit rounded-full bg-pink-600 py-2 px-4 font-semibold text-white'
         onClick={() => handleCreateGroup()}
       >
-        Create Group
+        {`Create ${isCreatingGroup ? 'this ' : ''}Group`}
       </button>
       {isCreatingGroup ? (
         <button
@@ -73,9 +98,7 @@ export function IntervalGroup({
   groups,
   setGroups,
 }: IntervalGroupProps) {
-  let countDown = useRef()
-
-  const [updatedGroupTitle, setUpdatedGroupTitle] = useState(group.title)
+  const [editedGroupTitle, setEditedGroupTitle] = useState(group.title)
   const [isCreatingInterval, setIsCreatingInterval] = useState(false)
   const [initialIntervalTitle, setInitialIntervalTitle] = useState('')
   const [initialIntervalHours, setInitialIntervalHours] = useState(0)
@@ -83,10 +106,6 @@ export function IntervalGroup({
   const [initialIntervalSeconds, setInitialIntervalSeconds] = useState(0)
   const [initialRepeat, setInitialRepeat] = useState(0)
   const [intervals, setIntervals] = useState<any>([])
-
-  function handleDeleteGroup(currentGroupId: string) {
-    setGroups([...groups.filter((group: any) => group.id !== currentGroupId)])
-  }
 
   function handleCreateInterval() {
     setIsCreatingInterval((prevS) => !prevS)
@@ -104,16 +123,17 @@ export function IntervalGroup({
     }
   }
 
+  function handleDeleteGroup(currentGroupId: string) {
+    setGroups([...groups.filter((group: any) => group.id !== currentGroupId)])
+  }
+
   return (
     <div className='rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
       <div className='mb-2 flex w-full flex-wrap items-center gap-x-4'>
         <div className='whitespace-nowrap text-xl font-semibold text-pink-900 dark:text-pink-100'>
-          {updatedGroupTitle}
+          {editedGroupTitle}
         </div>
         <div className='w-fit'>Repeat</div>
-        <button className='w-fit rounded-full bg-green-600 py-2 px-4 font-semibold text-white'>
-          Start
-        </button>
         <button
           className='ml-auto w-fit rounded-full font-semibold'
           onClick={() => handleDeleteGroup(group.id)}
@@ -164,7 +184,7 @@ export function IntervalGroup({
         className='w-fit rounded-full bg-blue-600 py-2 px-4 font-semibold text-white'
         onClick={() => handleCreateInterval()}
       >
-        Create Interval
+        {`Create ${isCreatingInterval ? 'this ' : ''}Interval`}
       </button>
       {isCreatingInterval ? (
         <button
