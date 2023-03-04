@@ -1,10 +1,11 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createId } from '@paralleldrive/cuid2'
 
 export default function IntervalGroups() {
   const [isCreatingGroup, setIsCreatingGroup] = useState(false)
   const [initialGroupTitle, setInitialGroupTitle] = useState('')
   const [groups, setGroups] = useState<any>([])
+  const [isThereANonZeroInterval, setIsThereANonZeroInterval] = useState(false)
 
   // let countDown = useRef<number>(0)
 
@@ -27,22 +28,10 @@ export default function IntervalGroups() {
     }
   }
 
-  function isUserAbleToStartWorkout() {
-    let result = groups.filter(
-      (group: any) => group.h > 0 || group.m > 0 || group.s > 0
-    )
-
-    let result2 = groups
-
-    console.log(result2)
-
-    return false
-  }
-
   return (
     <>
       <div className='flex flex-col gap-y-4'>
-        {isUserAbleToStartWorkout() ? (
+        {isThereANonZeroInterval ? (
           <button className='mb-2 w-fit rounded-full bg-green-600 py-2 px-4 text-lg font-semibold text-white'>
             Start Workout
           </button>
@@ -53,6 +42,7 @@ export default function IntervalGroups() {
               group={group}
               groups={groups}
               setGroups={setGroups}
+              setIsThereANonZeroInterval={setIsThereANonZeroInterval}
             />
           </div>
         ))}
@@ -91,12 +81,14 @@ interface IntervalGroupProps {
   group: any
   groups: any
   setGroups: any
+  setIsThereANonZeroInterval: any
 }
 
 export function IntervalGroup({
   group,
   groups,
   setGroups,
+  setIsThereANonZeroInterval,
 }: IntervalGroupProps) {
   const [editedGroupTitle, setEditedGroupTitle] = useState(group.title)
   const [isCreatingInterval, setIsCreatingInterval] = useState(false)
@@ -122,6 +114,15 @@ export function IntervalGroup({
       ])
     }
   }
+
+  useEffect(() => {
+    setIsThereANonZeroInterval(
+      intervals.filter(
+        (interval: any) =>
+          interval.h !== 0 || interval.m !== 0 || interval.s !== 0
+      ).length > 0
+    )
+  }, [intervals])
 
   function handleDeleteGroup(currentGroupId: string) {
     setGroups([...groups.filter((group: any) => group.id !== currentGroupId)])
