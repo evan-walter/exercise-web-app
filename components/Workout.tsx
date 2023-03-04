@@ -10,6 +10,24 @@ export default function Workout() {
   const [initialRepeat, setInitialRepeat] = useState(0)
   const [intervals, setIntervals] = useState<any>([])
   const [isThereANonZeroInterval, setIsThereANonZeroInterval] = useState(false)
+  const [isPaused, setIsPaused] = useState(true)
+  const [countDownHours, setCountDownHours] = useState(0)
+  const [countDownMinutes, setCountDownMinutes] = useState(0)
+  const [countDownSeconds, setCountDownSeconds] = useState(0)
+
+  let countDown = useRef<any>(0)
+
+  function addOneHour() {
+    intervals.forEach((item: any) => item.h + 1)
+  }
+
+  function handleCountDown() {
+    setIsPaused(false)
+    // setIntervals((prevIntervals: any) => addOneHour(prevIntervals))
+    setIntervals((prevIntervals: any) =>
+      [...prevIntervals].forEach((item) => console.log(item))
+    )
+  }
 
   function handleCreateInterval() {
     setIsCreatingInterval((prevS) => !prevS)
@@ -51,8 +69,11 @@ export default function Workout() {
   return (
     <div className='flex flex-col gap-y-4'>
       {isThereANonZeroInterval ? (
-        <button className='mb-2 w-fit rounded-full bg-green-600 py-2 px-4 text-lg font-semibold text-white'>
-          Start Workout
+        <button
+          className='mb-2 w-fit rounded-full bg-green-600 py-2 px-4 text-lg font-semibold text-white'
+          onClick={() => handleCountDown()}
+        >
+          {`${isPaused ? 'Start' : 'Pause'} Workout`}
         </button>
       ) : null}
       <div className='rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
