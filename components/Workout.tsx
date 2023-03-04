@@ -17,16 +17,32 @@ export default function Workout() {
 
   let countDown = useRef<any>(0)
 
-  function addOneHour() {
-    intervals.forEach((item: any) => item.h + 1)
-  }
-
   function handleCountDown() {
-    setIsPaused(false)
-    // setIntervals((prevIntervals: any) => addOneHour(prevIntervals))
-    setIntervals((prevIntervals: any) =>
-      [...prevIntervals].forEach((item) => console.log(item))
-    )
+    setIsPaused((s) => !s)
+    countDown.current = setInterval(() => {
+      setIntervals((prevIntervals: any) =>
+        [...prevIntervals].map((prevInterval: any) => {
+          if (prevInterval.seconds > 0) {
+            return { ...prevInterval, seconds: prevInterval.seconds - 1 }
+          } else if (prevInterval.minutes > 0) {
+            return {
+              ...prevInterval,
+              minutes: prevInterval.minutes - 1,
+              seconds: 59,
+            }
+          } else if (prevInterval.hours > 0) {
+            return {
+              ...prevInterval,
+              hours: prevInterval.hours - 1,
+              minutes: 59,
+              seconds: 59,
+            }
+          } else {
+            return { ...prevInterval }
+          }
+        })
+      )
+    }, 1000)
   }
 
   function handleCreateInterval() {
@@ -37,9 +53,9 @@ export default function Workout() {
         {
           id: createId(),
           title: initialIntervalTitle,
-          h: initialIntervalHours,
-          m: initialIntervalMinutes,
-          s: initialIntervalSeconds,
+          hours: initialIntervalHours,
+          minutes: initialIntervalMinutes,
+          seconds: initialIntervalSeconds,
         },
       ])
     }
@@ -51,17 +67,17 @@ export default function Workout() {
     ])
   }
 
-  function formatTimeUnit(timeUnit: number) {
-    return `${timeUnit >= 10 ? timeUnit.toString() : `0${timeUnit.toString()}`}`
+  function format(timeUnit: number) {
+    return `${timeUnit >= 10 ? timeUnit : `0${timeUnit.toString()}`}`
   }
 
   useEffect(() => {
     setIsThereANonZeroInterval(
       intervals.filter(
         (interval: any) =>
-          interval.h.toString() !== '0' ||
-          interval.m.toString() !== '0' ||
-          interval.s.toString() !== '0'
+          interval.hours.toString() !== '0' ||
+          interval.minutes.toString() !== '0' ||
+          interval.seconds.toString() !== '0'
       ).length > 0
     )
   }, [isThereANonZeroInterval, intervals])
@@ -70,7 +86,9 @@ export default function Workout() {
     <div className='flex flex-col gap-y-4'>
       {isThereANonZeroInterval ? (
         <button
-          className='mb-2 w-fit rounded-full bg-green-600 py-2 px-4 text-lg font-semibold text-white'
+          className={`${
+            isPaused ? 'bg-green-600' : 'bg-yellow-600'
+          } mb-2 w-fit rounded-full py-2 px-4 text-lg font-semibold text-white`}
           onClick={() => handleCountDown()}
         >
           {`${isPaused ? 'Start' : 'Pause'} Workout`}
@@ -90,9 +108,9 @@ export default function Workout() {
           >
             <div className='flex flex-wrap-reverse items-center gap-4'>
               <div className='text-2xl'>
-                <span>{formatTimeUnit(interval.h)} : </span>
-                <span>{formatTimeUnit(interval.m)} : </span>
-                <span>{formatTimeUnit(interval.s)}</span>
+                <span>{format(interval.hours)} : </span>
+                <span>{format(interval.minutes)} : </span>
+                <span>{format(interval.seconds)}</span>
               </div>
               <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
                 {interval.title}
