@@ -122,7 +122,7 @@ export function IntervalGroup({
           interval.h !== 0 || interval.m !== 0 || interval.s !== 0
       ).length > 0
     )
-  }, [intervals])
+  }, [setIsThereANonZeroInterval, intervals])
 
   function handleDeleteGroup(currentGroupId: string) {
     setGroups([...groups.filter((group: any) => group.id !== currentGroupId)])
