@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { createId } from '@paralleldrive/cuid2'
 
 export default function IntervalGroups() {
