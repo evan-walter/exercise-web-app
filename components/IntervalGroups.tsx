@@ -23,7 +23,7 @@ export default function IntervalGroups() {
     <>
       <div className='flex flex-col gap-y-4'>
         {groups.map((group: any) => (
-          <div key={group.id} className=''>
+          <div key={group.id}>
             <IntervalGroup
               group={group}
               groups={groups}
@@ -32,7 +32,7 @@ export default function IntervalGroups() {
           </div>
         ))}
         {isCreatingGroup ? (
-          <div className='my-4 rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
+          <div className='rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
             <div className='mb-2 text-xl font-semibold text-pink-900 dark:text-pink-100'>
               New Group
             </div>
@@ -45,14 +45,14 @@ export default function IntervalGroups() {
         ) : null}
       </div>
       <button
-        className='w-fit rounded-full bg-pink-300 py-2 px-4 dark:bg-pink-600'
+        className='mt-4 w-fit rounded-full bg-pink-300 py-2 px-4 dark:bg-pink-600'
         onClick={() => handleCreateGroup()}
       >
         Create Group
       </button>
       {isCreatingGroup ? (
         <button
-          className='ml-4 w-fit rounded-full bg-amber-300 py-2 px-4 dark:bg-amber-600'
+          className='ml-4 mt-4 w-fit rounded-full bg-amber-300 py-2 px-4 dark:bg-amber-600'
           onClick={() => setIsCreatingGroup(false)}
         >
           Cancel
@@ -103,7 +103,7 @@ export function IntervalGroup({
   }
 
   return (
-    <div className='my-4 rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
+    <div className='rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
       <div className='mb-2 flex w-full flex-wrap items-center gap-x-4'>
         <div className='whitespace-nowrap text-xl font-semibold text-pink-900 dark:text-pink-100'>
           {updatedGroupTitle}
@@ -200,9 +200,9 @@ export function Interval({ interval, intervals, setIntervals }: IntervalProps) {
   return (
     <div className='flex flex-wrap-reverse items-center gap-4'>
       <div className='text-2xl'>
-        <span className=''>{formatTimeUnit(interval.h)} : </span>
-        <span className=''>{formatTimeUnit(interval.m)} : </span>
-        <span className=''>{formatTimeUnit(interval.s)}</span>
+        <span>{formatTimeUnit(interval.h)} : </span>
+        <span>{formatTimeUnit(interval.m)} : </span>
+        <span>{formatTimeUnit(interval.s)}</span>
       </div>
       <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
         {updatedIntervalTitle}
