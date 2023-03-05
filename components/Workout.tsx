@@ -1,166 +1,109 @@
 import { useState, useRef, useEffect } from 'react'
-import { createId } from '@paralleldrive/cuid2'
 
 export default function Workout() {
-  const [isCreatingInterval, setIsCreatingInterval] = useState(false)
-  const [initialIntervalTitle, setInitialIntervalTitle] = useState('')
-  const [initialIntervalHours, setInitialIntervalHours] = useState(0)
-  const [initialIntervalMinutes, setInitialIntervalMinutes] = useState(0)
-  const [initialIntervalSeconds, setInitialIntervalSeconds] = useState(0)
-  const [initialRepeat, setInitialRepeat] = useState(0)
-  const [intervals, setIntervals] = useState<any>([])
-  const [isThereANonZeroInterval, setIsThereANonZeroInterval] = useState(false)
-  const [isPaused, setIsPaused] = useState(true)
-  const [countDownHours, setCountDownHours] = useState(0)
-  const [countDownMinutes, setCountDownMinutes] = useState(0)
-  const [countDownSeconds, setCountDownSeconds] = useState(0)
+  const [isEditingCycles, setIsEditingCycles] = useState(false)
+  const [cycles, setCycles] = useState(19)
+  const [isCreatingTimer, setIsCreatingTimer] = useState(false)
+  const [inputCycles, setInputCycles] = useState(19)
+  const [inputTitle, setInputTitle] = useState('Low')
+  const [inputMinutes, setInputMinutes] = useState(1)
+  const [inputSeconds, setInputSeconds] = useState(0)
+  const [count, setCount] = useState(0)
+  const [timers, setTimers] = useState<any>([])
 
-  let countDown = useRef<any>(0)
-
-  function handleCountDown() {
-    setIsPaused((s) => !s)
-    countDown.current = setInterval(() => {
-      setIntervals((prevIntervals: any) =>
-        [...prevIntervals].map((prevInterval: any) => {
-          if (prevInterval.seconds > 0) {
-            return { ...prevInterval, seconds: prevInterval.seconds - 1 }
-          } else if (prevInterval.minutes > 0) {
-            return {
-              ...prevInterval,
-              minutes: prevInterval.minutes - 1,
-              seconds: 59,
-            }
-          } else if (prevInterval.hours > 0) {
-            return {
-              ...prevInterval,
-              hours: prevInterval.hours - 1,
-              minutes: 59,
-              seconds: 59,
-            }
-          } else {
-            return { ...prevInterval }
-          }
-        })
-      )
-    }, 1000)
-  }
-
-  function handleCreateInterval() {
-    setIsCreatingInterval((prevS) => !prevS)
-    if (isCreatingInterval) {
-      setIntervals((prevIntervals: []) => [
-        ...prevIntervals,
+  function handleCreateTimer() {
+    setIsCreatingTimer((prevIsCreatingTimer) => !prevIsCreatingTimer)
+    if (isCreatingTimer) {
+      setTimers((prevTimers: any) => [
+        ...prevTimers,
         {
-          id: createId(),
-          title: initialIntervalTitle,
-          hours: initialIntervalHours,
-          minutes: initialIntervalMinutes,
-          seconds: initialIntervalSeconds,
+          id: prevTimers.length > 0 ? prevTimers.id + 1 : 0,
+          title: inputTitle,
+          minutes: inputMinutes,
+          seconds: inputSeconds,
         },
       ])
     }
+    return
   }
 
-  function handleDeleteInterval(currentIntervalId: string) {
-    setIntervals([
-      ...intervals.filter((interval: any) => interval.id !== currentIntervalId),
-    ])
+  function handleDeleteTimer() {
+    return
   }
-
-  function format(timeUnit: number) {
-    return `${timeUnit >= 10 ? timeUnit : `0${timeUnit.toString()}`}`
-  }
-
-  useEffect(() => {
-    setIsThereANonZeroInterval(
-      intervals.filter(
-        (interval: any) =>
-          interval.hours.toString() !== '0' ||
-          interval.minutes.toString() !== '0' ||
-          interval.seconds.toString() !== '0'
-      ).length > 0
-    )
-  }, [isThereANonZeroInterval, intervals])
 
   return (
     <div className='flex flex-col gap-y-4'>
-      {isThereANonZeroInterval ? (
-        <button
-          className={`${
-            isPaused ? 'bg-green-600' : 'bg-yellow-600'
-          } mb-2 w-fit rounded-full py-2 px-4 text-lg font-semibold text-white`}
-          onClick={() => handleCountDown()}
-        >
-          {`${isPaused ? 'Start' : 'Pause'} Workout`}
-        </button>
-      ) : null}
       <div className='rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
         <div className='mb-2 flex w-full flex-wrap items-center gap-x-6'>
-          <div className='whitespace-nowrap text-xl font-semibold text-pink-900 dark:text-pink-100'>
+          <h2 className='whitespace-nowrap text-xl font-semibold text-pink-900 dark:text-pink-100'>
             Workout
-          </div>
-          <div className='w-fit'>Repeat</div>
-        </div>
-        {intervals.map((interval: any) => (
-          <div
-            key={interval.id}
-            className='my-4 flex flex-col gap-y-4 rounded-lg bg-slate-100 p-3 dark:bg-slate-700'
-          >
-            <div className='flex flex-wrap-reverse items-center gap-4'>
-              <div className='text-2xl'>
-                <span>{format(interval.hours)} : </span>
-                <span>{format(interval.minutes)} : </span>
-                <span>{format(interval.seconds)}</span>
-              </div>
-              <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
-                {interval.title}
-              </div>
+          </h2>
+          {isEditingCycles ? (
+            <>
+              <Input
+                name='cycles'
+                inputValue={inputCycles}
+                setInputValue={setInputCycles}
+                addClassNames='w-[4.2rem]'
+              />
               <button
-                className='ml-auto w-fit rounded-full font-semibold'
-                onClick={() => handleDeleteInterval(interval.id)}
+                onClick={() => {
+                  setIsEditingCycles(
+                    (prevIsEditingCycles) => !prevIsEditingCycles
+                  )
+                  setCycles(inputCycles)
+                }}
               >
-                <X />
+                Confirm Edit
               </button>
-            </div>
-          </div>
-        ))}
-        {isCreatingInterval ? (
+            </>
+          ) : (
+            <>
+              <p>{`${inputCycles} Cycle${inputCycles == 1 ? '' : 's'}`}</p>
+              <button
+                onClick={() =>
+                  setIsEditingCycles(
+                    (prevIsEditingCycles) => !prevIsEditingCycles
+                  )
+                }
+              >
+                Edit
+              </button>
+            </>
+          )}
+        </div>
+        {isCreatingTimer ? (
           <>
-            <div className='mb-2 text-lg font-semibold'>New Interval</div>
+            <h3 className='mb-2 text-lg font-semibold'>New Interval</h3>
             <div className='mb-4 flex flex-col gap-y-4'>
               <Input
                 name={'title'}
-                theState={initialIntervalTitle}
-                setTheState={setInitialIntervalTitle}
-              />
-              <Input
-                name={'hours'}
-                theState={initialIntervalHours}
-                setTheState={setInitialIntervalHours}
+                inputValue={inputTitle}
+                setInputValue={setInputTitle}
               />
               <Input
                 name={'minutes'}
-                theState={initialIntervalMinutes}
-                setTheState={setInitialIntervalMinutes}
+                inputValue={inputMinutes}
+                setInputValue={setInputMinutes}
               />
               <Input
                 name={'seconds'}
-                theState={initialIntervalSeconds}
-                setTheState={setInitialIntervalSeconds}
+                inputValue={inputSeconds}
+                setInputValue={setInputSeconds}
               />
             </div>
           </>
         ) : null}
         <button
           className='w-fit rounded-full bg-blue-600 py-2 px-4 font-semibold text-white'
-          onClick={() => handleCreateInterval()}
+          onClick={() => handleCreateTimer()}
         >
-          {`Create ${isCreatingInterval ? 'this ' : ''}Interval`}
+          {`Create ${isCreatingTimer ? 'this ' : ''}Interval`}
         </button>
-        {isCreatingInterval ? (
+        {isCreatingTimer ? (
           <button
             className='ml-4 w-fit rounded-full bg-amber-600 py-2 px-4 font-semibold text-white'
-            onClick={() => setIsCreatingInterval(false)}
+            onClick={() => setIsCreatingTimer(false)}
           >
             Cancel
           </button>
@@ -170,20 +113,34 @@ export default function Workout() {
   )
 }
 
-interface InputProps {
-  name: string
-  theState: string | number
-  setTheState: any
+export function Timer() {
+  return (
+    <>
+      <div>Timer</div>
+    </>
+  )
 }
 
-export function Input({ name, theState, setTheState }: InputProps) {
+interface InputProps {
+  name: string
+  inputValue: string | number
+  setInputValue: any
+  addClassNames?: string
+}
+
+export function Input({
+  name,
+  inputValue,
+  setInputValue,
+  addClassNames,
+}: InputProps) {
   return (
     <div className='relative flex flex-col'>
       <input
         name={name}
-        className='peer rounded-lg bg-slate-100 px-2 pt-5 pb-3 shadow-md dark:bg-slate-700'
-        value={theState}
-        onChange={(e) => setTheState(e.target.value)}
+        className={`${addClassNames} peer rounded-lg bg-slate-100 px-2 pt-5 pb-3 shadow-md dark:bg-slate-700`}
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
         type={name === 'title' ? 'text' : 'number'}
         placeholder={`${name.charAt(0).toUpperCase()}${name.slice(1)}`}
       />
