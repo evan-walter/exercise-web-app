@@ -4,12 +4,69 @@ export default function Workout() {
   const [isEditingCycles, setIsEditingCycles] = useState(false)
   const [cycles, setCycles] = useState(19)
   const [isCreatingTimer, setIsCreatingTimer] = useState(false)
-  const [inputCycles, setInputCycles] = useState(19)
+  const [inputCycles, setInputCycles] = useState(3)
   const [inputTitle, setInputTitle] = useState('Low')
-  const [inputMinutes, setInputMinutes] = useState(1)
-  const [inputSeconds, setInputSeconds] = useState(0)
+  const [inputMinutes, setInputMinutes] = useState(0)
+  const [inputSeconds, setInputSeconds] = useState(10)
   const [count, setCount] = useState(0)
   const [timers, setTimers] = useState<any>([])
+  const [countDownTimers, setCountDownTimers] = useState<any>([])
+  const [isNotStarted, setIsNotStarted] = useState(true)
+  const [isPaused, setIsPaused] = useState(true)
+  const [isWorkoutComplete, setIsWorkoutComplete] = useState(false)
+
+  let countDown = useRef<any>(0)
+
+  function handleCountDown() {
+    setCountDownTimers(timers)
+    setIsPaused((prevIsPaused) => !prevIsPaused)
+    countDown.current = setInterval(() => {
+      countDownTimers((prevCountDownTimers: any) =>
+        [...prevCountDownTimers].map((prevCountDownTimer: any) => {
+          // Check whether or not to move onto the next timer.
+          if (
+            prevCountDownTimer.minutes == 0 &&
+            prevCountDownTimer.seconds == 0
+          ) {
+            setCount((prevCount) => prevCount + 1) // Increment
+
+            // Determine whether or not to move onto the next cycle.
+            if (count > timers.length) {
+              setCycles((prevCycles) => prevCycles - 1) // Move onto the next cycle.
+
+              // Determine whether or not the workout is complete.
+              if (cycles == 0) {
+                setIsWorkoutComplete(true)
+              } else {
+                setCount(0) // Reset count to begin the next cycle.
+              }
+            }
+          }
+
+          // Implement the remaining count-down logic.
+          // Check if the count matches the current timer id. Count down this timer until this timer equals zero.
+          if (count == prevCountDownTimer.id) {
+            if (prevCountDownTimer.seconds > 0) {
+              return {
+                ...prevCountDownTimer,
+                seconds: prevCountDownTimer.seconds - 1,
+              }
+            } else if (prevCountDownTimer.minutes > 0) {
+              return {
+                ...prevCountDownTimer,
+                minutes: prevCountDownTimer.minutes - 1,
+                seconds: 59,
+              }
+            } else {
+              return { ...prevCountDownTimer }
+            }
+          }
+        })
+      )
+      if (isWorkoutComplete) return
+      console.log(timers[0].minutes)
+    }, 1000)
+  }
 
   function handleCreateTimer() {
     setIsCreatingTimer((prevIsCreatingTimer) => !prevIsCreatingTimer)
@@ -24,6 +81,7 @@ export default function Workout() {
         },
       ])
     }
+    setCountDownTimers(timers)
   }
 
   function handleDeleteTimer(currentTimerId: string) {
@@ -43,6 +101,16 @@ export default function Workout() {
 
   return (
     <div className='flex flex-col gap-y-4'>
+      {timers.length > 0 ? (
+        <button
+          className={`${
+            isPaused ? 'bg-green-600' : 'bg-yellow-600'
+          } mb-2 w-fit rounded-full py-2 px-4 text-lg font-semibold text-white`}
+          onClick={() => handleCountDown()}
+        >
+          {`${isPaused ? 'Start' : 'Pause'} Workout`}
+        </button>
+      ) : null}
       <div className='flex flex-col gap-y-4 rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
         <div className='mb-2 flex w-full flex-wrap items-center gap-x-6'>
           <h2 className='whitespace-nowrap text-xl font-semibold text-pink-900 dark:text-pink-100'>
@@ -84,22 +152,22 @@ export default function Workout() {
             </>
           )}
         </div>
-        {timers.map((timer: any) => (
+        {countDownTimers.map((countDownTimer: any) => (
           <div
-            key={timer.id}
+            key={countDownTimer.id}
             className='flex flex-col gap-y-4 rounded-lg bg-slate-100 p-3 dark:bg-slate-700'
           >
             <div className='flex flex-wrap-reverse items-center gap-4'>
               <div className='text-2xl'>
-                <span>{format(timer.minutes)} : </span>
-                <span>{format(timer.seconds)}</span>
+                <span>{format(countDownTimer.minutes)} : </span>
+                <span>{format(countDownTimer.seconds)}</span>
               </div>
               <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
-                {timer.title}
+                {countDownTimer.title}
               </div>
               <button
                 className='ml-auto w-fit rounded-full font-semibold'
-                onClick={() => handleDeleteTimer(timer.id)}
+                onClick={() => handleDeleteTimer(countDownTimer.id)}
               >
                 <X />
               </button>
