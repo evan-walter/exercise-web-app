@@ -24,16 +24,21 @@ export default function Workout() {
         },
       ])
     }
-    return
   }
 
-  function handleDeleteTimer() {
-    return
+  function handleDeleteTimer(currentTimerId: string) {
+    setTimers((prevTimers: any) => [
+      ...prevTimers.filter((prevTimer: any) => prevTimer.id !== currentTimerId),
+    ])
+  }
+
+  function format(timeUnit: number) {
+    return `${timeUnit >= 10 ? timeUnit : `0${timeUnit}`}`
   }
 
   return (
     <div className='flex flex-col gap-y-4'>
-      <div className='rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
+      <div className='flex flex-col gap-y-4 rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
         <div className='mb-2 flex w-full flex-wrap items-center gap-x-6'>
           <h2 className='whitespace-nowrap text-xl font-semibold text-pink-900 dark:text-pink-100'>
             Workout
@@ -59,7 +64,9 @@ export default function Workout() {
             </>
           ) : (
             <>
-              <p>{`${inputCycles} Cycle${inputCycles == 1 ? '' : 's'}`}</p>
+              <p className='font-semibold'>{`${inputCycles} Cycle${
+                inputCycles == 1 ? '' : 's'
+              }`}</p>
               <button
                 onClick={() =>
                   setIsEditingCycles(
@@ -72,9 +79,47 @@ export default function Workout() {
             </>
           )}
         </div>
+        {timers.map((timer: any) => (
+          <div
+            key={timer.id}
+            className='flex flex-col gap-y-4 rounded-lg bg-slate-100 p-3 dark:bg-slate-700'
+          >
+            <div className='flex flex-wrap-reverse items-center gap-4'>
+              <div className='text-2xl'>
+                <span>{format(timer.minutes)} : </span>
+                <span>{format(timer.seconds)}</span>
+              </div>
+              <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
+                {timer.title}
+              </div>
+              <button
+                className='ml-auto w-fit rounded-full font-semibold'
+                onClick={() => handleDeleteTimer(timer.id)}
+              >
+                <X />
+              </button>
+            </div>
+          </div>
+        ))}
+        <div className='flex'>
+          <button
+            className='w-fit rounded-full bg-blue-600 py-2 px-4 font-semibold text-white'
+            onClick={() => handleCreateTimer()}
+          >
+            {`Create ${isCreatingTimer ? 'this ' : ''}Timer`}
+          </button>
+          {isCreatingTimer ? (
+            <button
+              className='ml-4 w-fit rounded-full bg-amber-600 py-2 px-4 font-semibold text-white'
+              onClick={() => setIsCreatingTimer(false)}
+            >
+              Cancel
+            </button>
+          ) : null}
+        </div>
         {isCreatingTimer ? (
           <>
-            <h3 className='mb-2 text-lg font-semibold'>New Interval</h3>
+            <h3 className='mb-2 text-lg font-semibold'>New Timer</h3>
             <div className='mb-4 flex flex-col gap-y-4'>
               <Input
                 name={'title'}
@@ -93,20 +138,6 @@ export default function Workout() {
               />
             </div>
           </>
-        ) : null}
-        <button
-          className='w-fit rounded-full bg-blue-600 py-2 px-4 font-semibold text-white'
-          onClick={() => handleCreateTimer()}
-        >
-          {`Create ${isCreatingTimer ? 'this ' : ''}Interval`}
-        </button>
-        {isCreatingTimer ? (
-          <button
-            className='ml-4 w-fit rounded-full bg-amber-600 py-2 px-4 font-semibold text-white'
-            onClick={() => setIsCreatingTimer(false)}
-          >
-            Cancel
-          </button>
         ) : null}
       </div>
     </div>
