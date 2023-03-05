@@ -17,7 +17,7 @@ export default function Workout() {
       setTimers((prevTimers: any) => [
         ...prevTimers,
         {
-          id: prevTimers.length > 0 ? prevTimers.id + 1 : 0,
+          id: prevTimers.length,
           title: inputTitle,
           minutes: inputMinutes,
           seconds: inputSeconds,
@@ -30,6 +30,11 @@ export default function Workout() {
     setTimers((prevTimers: any) => [
       ...prevTimers.filter((prevTimer: any) => prevTimer.id !== currentTimerId),
     ])
+    setTimers((prevTimers: any) =>
+      [...prevTimers].map((prevTimer: any, prevTimerIndex: number) => {
+        return { ...prevTimer, id: prevTimerIndex }
+      })
+    )
   }
 
   function format(timeUnit: number) {
