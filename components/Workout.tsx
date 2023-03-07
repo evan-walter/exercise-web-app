@@ -7,10 +7,9 @@ export default function Workout() {
   const [inputCycles, setInputCycles] = useState(3)
   const [inputTitle, setInputTitle] = useState('Low')
   const [inputMinutes, setInputMinutes] = useState(0)
-  const [inputSeconds, setInputSeconds] = useState(10)
+  const [inputSeconds, setInputSeconds] = useState(5)
   const [count, setCount] = useState(0)
   const [timers, setTimers] = useState<any>([])
-  const [countDownTimers, setCountDownTimers] = useState<any>([])
   const [isNotStarted, setIsNotStarted] = useState(true)
   const [isPaused, setIsPaused] = useState(true)
   const [isWorkoutComplete, setIsWorkoutComplete] = useState(false)
@@ -18,16 +17,12 @@ export default function Workout() {
   let countDown = useRef<any>(0)
 
   function handleCountDown() {
-    setCountDownTimers(timers)
     setIsPaused((prevIsPaused) => !prevIsPaused)
     countDown.current = setInterval(() => {
-      countDownTimers((prevCountDownTimers: any) =>
-        [...prevCountDownTimers].map((prevCountDownTimer: any) => {
+      setTimers((prevTimers: any) =>
+        [...prevTimers].map((prevTimer: any) => {
           // Check whether or not to move onto the next timer.
-          if (
-            prevCountDownTimer.minutes == 0 &&
-            prevCountDownTimer.seconds == 0
-          ) {
+          if (prevTimer.minutes == 0 && prevTimer.seconds == 0) {
             setCount((prevCount) => prevCount + 1) // Increment
 
             // Determine whether or not to move onto the next cycle.
@@ -45,26 +40,25 @@ export default function Workout() {
 
           // Implement the remaining count-down logic.
           // Check if the count matches the current timer id. Count down this timer until this timer equals zero.
-          if (count == prevCountDownTimer.id) {
-            if (prevCountDownTimer.seconds > 0) {
+          if (count == prevTimer.id) {
+            if (prevTimer.seconds > 0) {
               return {
-                ...prevCountDownTimer,
-                seconds: prevCountDownTimer.seconds - 1,
+                ...prevTimer,
+                seconds: prevTimer.seconds - 1,
               }
-            } else if (prevCountDownTimer.minutes > 0) {
+            } else if (prevTimer.minutes > 0) {
               return {
-                ...prevCountDownTimer,
-                minutes: prevCountDownTimer.minutes - 1,
+                ...prevTimer,
+                minutes: prevTimer.minutes - 1,
                 seconds: 59,
               }
             } else {
-              return { ...prevCountDownTimer }
+              return { ...prevTimer }
             }
           }
         })
       )
       if (isWorkoutComplete) return
-      console.log(timers[0].minutes)
     }, 1000)
   }
 
@@ -81,7 +75,6 @@ export default function Workout() {
         },
       ])
     }
-    setCountDownTimers(timers)
   }
 
   function handleDeleteTimer(currentTimerId: string) {
@@ -152,22 +145,22 @@ export default function Workout() {
             </>
           )}
         </div>
-        {countDownTimers.map((countDownTimer: any) => (
+        {timers.map((timer: any) => (
           <div
-            key={countDownTimer.id}
+            key={timer.id}
             className='flex flex-col gap-y-4 rounded-lg bg-slate-100 p-3 dark:bg-slate-700'
           >
             <div className='flex flex-wrap-reverse items-center gap-4'>
               <div className='text-2xl'>
-                <span>{format(countDownTimer.minutes)} : </span>
-                <span>{format(countDownTimer.seconds)}</span>
+                <span>{format(timer.minutes)} : </span>
+                <span>{format(timer.seconds)}</span>
               </div>
               <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
-                {countDownTimer.title}
+                {timer.title}
               </div>
               <button
                 className='ml-auto w-fit rounded-full font-semibold'
-                onClick={() => handleDeleteTimer(countDownTimer.id)}
+                onClick={() => handleDeleteTimer(timer.id)}
               >
                 <X />
               </button>
