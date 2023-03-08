@@ -26,7 +26,7 @@ export default function Workout() {
       timer.current = 0
       setTimerNumber(initialTimerNumber)
     }
-  })
+  }, [secondsLeft, timerNumber])
 
   return (
     <>
