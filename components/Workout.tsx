@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
 
 const initialSecondsLeft = 3
-const initialMinutesLeft = 1
 const initialTimerNumber = 3
+const initialCyclesLeft = 3
 
 export default function Workout() {
   const [secondsLeft, setSecondsLeft] = useState(initialSecondsLeft)
   const [timerNumber, setTimerNumber] = useState(initialTimerNumber)
+  const [cyclesLeft, setCyclesLeft] = useState(initialCyclesLeft)
 
   let timer = useRef<any>(0)
 
@@ -16,20 +17,21 @@ export default function Workout() {
     }, 1000)
   }
 
-  function displayedSecondsLeft() {}
-
   useEffect(() => {
-    console.log(timer.current)
     if (secondsLeft === 0) {
       setSecondsLeft(initialSecondsLeft)
       setTimerNumber((s) => s - 1)
     }
     if (timerNumber === 0) {
+      setTimerNumber(initialTimerNumber)
+      setCyclesLeft((s) => s - 1)
+    }
+    if (cyclesLeft === 0) {
       clearInterval(timer.current)
       timer.current = 0
-      setTimerNumber(initialTimerNumber)
+      setCyclesLeft(initialCyclesLeft)
     }
-  }, [secondsLeft, timerNumber])
+  }, [secondsLeft, timerNumber, cyclesLeft])
 
   return (
     <>
@@ -37,6 +39,7 @@ export default function Workout() {
         <div>
           <button onClick={handleStartTimer}>Start Timer</button>
         </div>
+        <div>Cycles Left: {cyclesLeft}</div>
         <div
           className={`${
             timerNumber === 3 ? 'border-amber-600' : 'border-slate-600'
