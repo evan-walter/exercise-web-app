@@ -10,57 +10,73 @@ export default function Workout() {
   const [inputSeconds, setInputSeconds] = useState(5)
   const [count, setCount] = useState(0)
   const [timers, setTimers] = useState<any>([])
-  const [isNotStarted, setIsNotStarted] = useState(true)
-  const [isPaused, setIsPaused] = useState(true)
+  const [isCountingDown, setIsCountingDown] = useState(false)
   const [isWorkoutComplete, setIsWorkoutComplete] = useState(false)
 
   let countDown = useRef<any>(0)
 
   function handleCountDown() {
-    setIsPaused((prevIsPaused) => !prevIsPaused)
+    setIsCountingDown((prevIsCountingDown) => !prevIsCountingDown)
     countDown.current = setInterval(() => {
       setTimers((prevTimers: any) =>
         [...prevTimers].map((prevTimer: any) => {
-          // Check whether or not to move onto the next timer.
-          if (prevTimer.minutes == 0 && prevTimer.seconds == 0) {
-            setCount((prevCount) => prevCount + 1) // Increment
-
-            // Determine whether or not to move onto the next cycle.
-            if (count > timers.length) {
-              setCycles((prevCycles) => prevCycles - 1) // Move onto the next cycle.
-
-              // Determine whether or not the workout is complete.
-              if (cycles == 0) {
-                setIsWorkoutComplete(true)
-              } else {
-                setCount(0) // Reset count to begin the next cycle.
-              }
-            }
-          }
-
-          // Implement the remaining count-down logic.
-          // Check if the count matches the current timer id. Count down this timer until this timer equals zero.
-          if (count == prevTimer.id) {
-            if (prevTimer.seconds > 0) {
-              return {
-                ...prevTimer,
-                seconds: prevTimer.seconds - 1,
-              }
-            } else if (prevTimer.minutes > 0) {
-              return {
-                ...prevTimer,
-                minutes: prevTimer.minutes - 1,
-                seconds: 59,
-              }
-            } else {
-              return { ...prevTimer }
-            }
+          return {
+            ...prevTimer,
+            seconds: prevTimer.seconds - 1,
           }
         })
       )
       if (isWorkoutComplete) return
     }, 1000)
   }
+
+  // function handleCountDown() {
+  //   setIsCountingDown((prevIsCountingDown) => !prevIsCountingDown)
+  //   countDown.current = setInterval(() => {
+  //     setTimers((prevTimers: any) =>
+  //       [...prevTimers].map((prevTimer: any) => {
+  //         // Check whether or not to move onto the next timer.
+  //         if (prevTimer.minutes == 0 && prevTimer.seconds == 0) {
+  //           setCount((prevCount) => prevCount + 1) // Increment
+
+  //           // Determine whether or not to move onto the next cycle.
+  //           if (count > timers.length) {
+  //             setCycles((prevCycles) => prevCycles - 1) // Move onto the next cycle.
+
+  //             // Determine whether or not the workout is complete.
+  //             if (cycles == 0) {
+  //               setIsWorkoutComplete(true)
+  //             } else {
+  //               setCount(0) // Reset count to begin the next cycle.
+  //             }
+  //           }
+  //         }
+
+  //         // Implement the remaining count-down logic.
+  //         // Check if the count matches the current timer id. Count down this timer until this timer equals zero.
+  //         if (count == prevTimer.id) {
+  //           if (prevTimer.seconds > 0) {
+  //             return {
+  //               ...prevTimer,
+  //               seconds: prevTimer.seconds - 1,
+  //             }
+  //           } else if (prevTimer.minutes > 0) {
+  //             return {
+  //               ...prevTimer,
+  //               minutes: prevTimer.minutes - 1,
+  //               seconds: 59,
+  //             }
+  //           } else {
+  //             return { ...prevTimer }
+  //           }
+  //         }
+  //       })
+  //     )
+  //     if (isWorkoutComplete) return
+  //   }, 1000)
+  // }
+
+  function handleCount() {}
 
   function handleCreateTimer() {
     setIsCreatingTimer((prevIsCreatingTimer) => !prevIsCreatingTimer)
@@ -97,11 +113,11 @@ export default function Workout() {
       {timers.length > 0 ? (
         <button
           className={`${
-            isPaused ? 'bg-green-600' : 'bg-yellow-600'
+            isCountingDown ? 'bg-yellow-600' : 'bg-green-600'
           } mb-2 w-fit rounded-full py-2 px-4 text-lg font-semibold text-white`}
           onClick={() => handleCountDown()}
         >
-          {`${isPaused ? 'Start' : 'Pause'} Workout`}
+          {`${isCountingDown ? 'Pause' : 'Start'} Workout`}
         </button>
       ) : null}
       <div className='flex flex-col gap-y-4 rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
