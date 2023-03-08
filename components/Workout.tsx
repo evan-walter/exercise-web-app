@@ -1,17 +1,17 @@
 import { useState, useRef, useEffect } from 'react'
 
-const initialCyclesLeft = 19
+const initialCyclesLeft = 3
 const initialMinutesLeft = 0
-const initialSecondsLeft = 5
+const initialSecondsLeft = 3
 
 export default function Workout() {
   // Old useState declarations
   const [isEditingCycles, setIsEditingCycles] = useState(false)
   const [isCreatingTimer, setIsCreatingTimer] = useState(false)
-  const [inputCycles, setInputCycles] = useState(19)
+  const [inputCycles, setInputCycles] = useState(initialCyclesLeft)
   const [inputTitle, setInputTitle] = useState('Low')
   const [inputMinutes, setInputMinutes] = useState(0)
-  const [inputSeconds, setInputSeconds] = useState(5)
+  const [inputSeconds, setInputSeconds] = useState(initialSecondsLeft)
   const [initialTimers, setInitialTimers] = useState<any>([])
   const [isCountingDown, setIsCountingDown] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
@@ -33,43 +33,35 @@ export default function Workout() {
       setCurrentSecondsLeft(
         (prevCurrentSecondsLeft) => prevCurrentSecondsLeft - 1
       )
-    }, 1000)
-  }
-
-  let currentSecondsLeftVariable = currentSecondsLeft
-  let currentTimerIdVariable = currentTimerId
-  let currentCyclesLeftVariable = currentCyclesLeft
-  let initialTimersVariable = initialTimers
-
-  function handleSetState(setState: any, state: any) {
-    setState(state)
+    }, 500)
   }
 
   // New useEffect
-  if (currentSecondsLeftVariable === 0) {
-    // setCurrentSecondsLeft(initialSecondsLeft)
-    handleSetState(setCurrentSecondsLeft, initialSecondsLeft)
-    // setCurrentTimerId((prevCurrentTimerId) => prevCurrentTimerId + 1)
-    handleSetState(
-      setCurrentTimerId,
-      (prevCurrentTimerId: any) => prevCurrentTimerId + 1
-    )
-  }
-  if (currentTimerIdVariable === initialTimersVariable.length + 1) {
-    // setCurrentTimerId(1)
-    handleSetState(setCurrentTimerId, 1)
-    // setCurrentCyclesLeft((prevCurrentCyclesLeft) => prevCurrentCyclesLeft - 1)
-    handleSetState(
-      setCurrentCyclesLeft,
-      (prevCurrentCyclesLeft: any) => prevCurrentCyclesLeft - 1
-    )
-  }
-  // // if (currentCyclesLeftVariable === 0) {
-  // //   clearInterval(countDown.current)
-  // //   countDown.current = 0
-  // //   // setCurrentCyclesLeft(initialCyclesLeft)
-  // //   handleSetState(setCurrentCyclesLeft, initialCyclesLeft)
-  // // }
+  useEffect(() => {
+    if (currentSecondsLeft === 0) {
+      setCurrentSecondsLeft(initialSecondsLeft)
+      setCurrentTimerId((prevCurrentTimerId) => prevCurrentTimerId + 1)
+      if (currentTimerId === initialTimers.length) {
+        console.log('test')
+        setCurrentTimerId(1)
+        setCurrentCyclesLeft(
+          (prevCurrentCyclesLeft) => prevCurrentCyclesLeft - 1
+        )
+        console.log(currentCyclesLeft)
+      }
+    }
+    if (currentCyclesLeft === 0) {
+      clearInterval(countDown.current)
+      countDown.current = 0
+      setCurrentCyclesLeft(inputCycles)
+    }
+  }, [
+    currentSecondsLeft,
+    currentCyclesLeft,
+    currentTimerId,
+    initialTimers.length,
+    inputCycles,
+  ])
 
   // Old helper functions
   function handleCreateTimer() {
@@ -190,19 +182,20 @@ export default function Workout() {
                 addClassNames='w-[4.2rem]'
               />
               <button
-                onClick={() =>
+                onClick={() => {
                   setIsEditingCycles(
                     (prevIsEditingCycles) => !prevIsEditingCycles
                   )
-                }
+                  setCurrentCyclesLeft(inputCycles)
+                }}
               >
                 Confirm Edit
               </button>
             </>
           ) : (
             <>
-              <p className='font-semibold'>{`${inputCycles} Cycle${
-                inputCycles == 1 ? '' : 's'
+              <p className='font-semibold'>{`${currentCyclesLeft} Cycle${
+                currentCyclesLeft == 1 ? '' : 's'
               }`}</p>
               <button
                 onClick={() =>
