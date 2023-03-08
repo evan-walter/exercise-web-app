@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 
-const initialSecondsLeft = 3
+const initialSecondsLeft = 60
 const initialTimerNumber = 3
-const initialCyclesLeft = 3
+const initialCyclesLeft = 18
 
 export default function Workout() {
   const [secondsLeft, setSecondsLeft] = useState(initialSecondsLeft)
