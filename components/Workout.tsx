@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 
-const initialSecondsLeft = 60
+const initialMinutesLeft = 0
+const initialSecondsLeft = 5
 const initialTimerId = 1
 
 export default function Workout() {
@@ -13,10 +14,14 @@ export default function Workout() {
   const [inputMinutes, setInputMinutes] = useState(0)
   const [inputSeconds, setInputSeconds] = useState(5)
   const [initialTimers, setInitialTimers] = useState<any>([])
+  const [isCountingDown, setIsCountingDown] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
 
   // New useState declarations
   const [currentSecondsLeft, setCurrentSecondsLeft] =
     useState(initialSecondsLeft)
+  const [currentMinutesLeft, setCurrentMinutesLeft] =
+    useState(initialMinutesLeft)
   const [currentTimerId, setCurrentTimerId] = useState(initialTimerId)
   const [currentCyclesLeft, setCurrentCyclesLeft] = useState(initialCyclesLeft)
 
@@ -24,6 +29,7 @@ export default function Workout() {
 
   // New helper function
   function handleStartTimer() {
+    setIsCountingDown(true)
     countDown.current = setInterval(() => {
       setCurrentSecondsLeft(
         (prevCurrentSecondsLeft) => prevCurrentSecondsLeft - 1
@@ -37,7 +43,7 @@ export default function Workout() {
       setCurrentSecondsLeft(initialSecondsLeft)
       setCurrentTimerId((prevCurrentTimerId) => prevCurrentTimerId + 1)
     }
-    if (currentTimerId === initialTimers.length) {
+    if (currentTimerId === initialTimers.length + 1) {
       setCurrentTimerId(initialTimerId)
       setCurrentCyclesLeft((prevCurrentCyclesLeft) => prevCurrentCyclesLeft - 1)
     }
@@ -46,7 +52,13 @@ export default function Workout() {
       countDown.current = 0
       setCurrentCyclesLeft(initialCyclesLeft)
     }
-  }, [currentSecondsLeft, currentTimerId, currentCyclesLeft])
+  }, [
+    currentSecondsLeft,
+    currentTimerId,
+    currentCyclesLeft,
+    initialCyclesLeft,
+    initialTimers.length,
+  ])
 
   // Old helper functions
   function handleCreateTimer() {
@@ -77,6 +89,16 @@ export default function Workout() {
         }
       )
     )
+  }
+
+  function handleDisplayWorkoutButtonText() {
+    if (isCountingDown) {
+      return 'Pause'
+    } else if (isPaused) {
+      return 'Resume'
+    } else {
+      return 'Start'
+    }
   }
 
   function format(timeUnit: number) {
@@ -133,6 +155,16 @@ export default function Workout() {
   // Old JSX
   return (
     <div className='flex flex-col gap-y-4'>
+      {initialTimers.length > 0 ? (
+        <button
+          className={`${
+            isCountingDown ? 'bg-yellow-600' : 'bg-green-600'
+          } mb-2 w-fit rounded-full py-2 px-4 text-lg font-semibold text-white`}
+          onClick={handleStartTimer}
+        >
+          {`${handleDisplayWorkoutButtonText()} Workout`}
+        </button>
+      ) : null}
       <div className='flex flex-col gap-y-4 rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
         <div className='mb-2 flex w-full flex-wrap items-center gap-x-6'>
           <h2 className='whitespace-nowrap text-xl font-semibold text-pink-900 dark:text-pink-100'>
@@ -178,15 +210,28 @@ export default function Workout() {
           <div
             key={initialTimer.id}
             className={`${
-              currentTimerId === initialTimer.id
+              initialTimer.id === currentTimerId
                 ? 'border border-amber-500'
                 : ''
             } flex flex-col gap-y-4 rounded-lg bg-slate-100 p-3 dark:bg-slate-700`}
           >
             <div className='flex flex-wrap-reverse items-center gap-4'>
               <div className='text-2xl'>
-                <span>{format(initialTimer.minutes)} : </span>
-                <span>{format(initialTimer.seconds)}</span>
+                <span>
+                  {format(
+                    initialTimer.id === currentTimerId
+                      ? currentMinutesLeft
+                      : initialTimer.minutes
+                  )}{' '}
+                  :{' '}
+                </span>
+                <span>
+                  {format(
+                    initialTimer.id === currentTimerId
+                      ? currentSecondsLeft
+                      : initialTimer.seconds
+                  )}
+                </span>
               </div>
               <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
                 {initialTimer.title}
