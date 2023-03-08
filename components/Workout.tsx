@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react'
 
 const initialMinutesLeft = 0
 const initialSecondsLeft = 5
-const initialTimerId = 1
 
 export default function Workout() {
   // Old useState declarations
@@ -22,7 +21,7 @@ export default function Workout() {
     useState(initialSecondsLeft)
   const [currentMinutesLeft, setCurrentMinutesLeft] =
     useState(initialMinutesLeft)
-  const [currentTimerId, setCurrentTimerId] = useState(initialTimerId)
+  const [currentTimerId, setCurrentTimerId] = useState(1)
   const [currentCyclesLeft, setCurrentCyclesLeft] = useState(initialCyclesLeft)
 
   let countDown = useRef<any>(0)
@@ -44,7 +43,7 @@ export default function Workout() {
       setCurrentTimerId((prevCurrentTimerId) => prevCurrentTimerId + 1)
     }
     if (currentTimerId === initialTimers.length + 1) {
-      setCurrentTimerId(initialTimerId)
+      setCurrentTimerId(1)
       setCurrentCyclesLeft((prevCurrentCyclesLeft) => prevCurrentCyclesLeft - 1)
     }
     if (currentCyclesLeft === 0) {
