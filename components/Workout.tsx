@@ -6,28 +6,15 @@ export default function Workout() {
   const [isCreatingTimer, setIsCreatingTimer] = useState(false)
   const [inputCycles, setInputCycles] = useState(3)
   const [inputTitle, setInputTitle] = useState('Low')
-  const [inputMinutes, setInputMinutes] = useState(0)
+  const [inputMinutes, setInputMinutes] = useState(1)
   const [inputSeconds, setInputSeconds] = useState(5)
   const [count, setCount] = useState(0)
   const [timers, setTimers] = useState<any>([])
   const [isCountingDown, setIsCountingDown] = useState(false)
   const [isWorkoutComplete, setIsWorkoutComplete] = useState(false)
 
-  let countDown = useRef<any>(0)
-
   function handleCountDown() {
     setIsCountingDown((prevIsCountingDown) => !prevIsCountingDown)
-    countDown.current = setInterval(() => {
-      setTimers((prevTimers: any) =>
-        [...prevTimers].map((prevTimer: any) => {
-          return {
-            ...prevTimer,
-            seconds: prevTimer.seconds - 1,
-          }
-        })
-      )
-      if (isWorkoutComplete) return
-    }, 1000)
   }
 
   // function handleCountDown() {
@@ -76,8 +63,6 @@ export default function Workout() {
   //   }, 1000)
   // }
 
-  function handleCount() {}
-
   function handleCreateTimer() {
     setIsCreatingTimer((prevIsCreatingTimer) => !prevIsCreatingTimer)
     if (isCreatingTimer) {
@@ -102,10 +87,6 @@ export default function Workout() {
         return { ...prevTimer, id: prevTimerIndex }
       })
     )
-  }
-
-  function format(timeUnit: number) {
-    return `${timeUnit >= 10 ? timeUnit : `0${timeUnit}`}`
   }
 
   return (
@@ -166,21 +147,18 @@ export default function Workout() {
             key={timer.id}
             className='flex flex-col gap-y-4 rounded-lg bg-slate-100 p-3 dark:bg-slate-700'
           >
-            <div className='flex flex-wrap-reverse items-center gap-4'>
-              <div className='text-2xl'>
-                <span>{format(timer.minutes)} : </span>
-                <span>{format(timer.seconds)}</span>
-              </div>
-              <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
-                {timer.title}
-              </div>
-              <button
-                className='ml-auto w-fit rounded-full font-semibold'
-                onClick={() => handleDeleteTimer(timer.id)}
-              >
-                <X />
-              </button>
-            </div>
+            <Timer
+              timer={timer}
+              isCountingDown={isCountingDown}
+              count={count}
+              setCount={setCount}
+            />
+            <button
+              className='ml-auto w-fit rounded-full font-semibold'
+              onClick={() => handleDeleteTimer(timer.id)}
+            >
+              <X />
+            </button>
           </div>
         ))}
         <div className='flex'>
@@ -226,11 +204,60 @@ export default function Workout() {
   )
 }
 
-export function Timer() {
+interface TimerProps {
+  timer: any
+  isCountingDown: boolean
+  count: number
+  setCount: any
+}
+
+export function Timer({ timer, isCountingDown }: TimerProps) {
+  const [currentTimer, setCurrentTimer] = useState(timer)
+
+  let countDown = useRef<any>(0)
+
+  function format(timeUnit: number) {
+    return `${timeUnit >= 10 ? timeUnit : `0${timeUnit}`}`
+  }
+
+  useEffect(() => {
+    if (isCountingDown) {
+      countDown.current ===
+        setInterval(() => {
+          setCurrentTimer((prevTimer: any) => {
+            if (prevTimer.seconds > 0) {
+              return {
+                ...prevTimer,
+                seconds: prevTimer.seconds - 1,
+              }
+            } else if (prevTimer.minutes > 0) {
+              return {
+                ...prevTimer,
+                minutes: prevTimer.minutes - 1,
+                seconds: 59,
+              }
+            } else {
+              return {
+                ...prevTimer,
+              }
+            }
+          })
+        }, 500)
+    } else {
+      return () => clearInterval(countDown.current)
+    }
+  })
+
   return (
-    <>
-      <div>Timer</div>
-    </>
+    <div className='flex flex-wrap-reverse items-center gap-4'>
+      <div className='text-2xl'>
+        <span>{format(currentTimer.minutes)} : </span>
+        <span>{format(currentTimer.seconds)}</span>
+      </div>
+      <div className='text-lg font-semibold text-blue-900 dark:text-blue-100'>
+        {timer.title}
+      </div>
+    </div>
   )
 }
 
