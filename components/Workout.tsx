@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 
 const initialCyclesLeft = 3
-const initialMinutesLeft = 0
+const initialMinutesLeft = 3
 const initialSecondsLeft = 3
 
 export default function Workout() {
@@ -9,7 +9,7 @@ export default function Workout() {
   const [isCreatingTimer, setIsCreatingTimer] = useState(false)
   const [inputCycles, setInputCycles] = useState(initialCyclesLeft)
   const [inputTitle, setInputTitle] = useState('Low')
-  const [inputMinutes, setInputMinutes] = useState(0)
+  const [inputMinutes, setInputMinutes] = useState(initialMinutesLeft)
   const [inputSeconds, setInputSeconds] = useState(initialSecondsLeft)
   const [initialTimers, setInitialTimers] = useState<any>([])
   const [isStarted, setIsStarted] = useState(false)
@@ -59,7 +59,7 @@ export default function Workout() {
       setCurrentSecondsLeft(
         (prevCurrentSecondsLeft) => prevCurrentSecondsLeft - 1
       )
-    }, 1000)
+    }, 10)
   }
 
   function handleClearInterval() {
@@ -106,13 +106,19 @@ export default function Workout() {
 
   useEffect(() => {
     if (currentSecondsLeft === 0) {
-      setCurrentSecondsLeft(initialSecondsLeft)
-      setCurrentTimerId((prevCurrentTimerId) => prevCurrentTimerId + 1)
-      if (currentTimerId === initialTimers.length) {
-        setCurrentTimerId(1)
-        setCurrentCyclesLeft(
-          (prevCurrentCyclesLeft) => prevCurrentCyclesLeft - 1
-        )
+      setCurrentSecondsLeft(59)
+      setCurrentMinutesLeft(
+        (prevCurrentMinutesLeft) => prevCurrentMinutesLeft - 1
+      )
+      if (currentMinutesLeft === 0) {
+        setCurrentSecondsLeft(initialSecondsLeft)
+        setCurrentTimerId((prevCurrentTimerId) => prevCurrentTimerId + 1)
+        if (currentTimerId === initialTimers.length) {
+          setCurrentTimerId(1)
+          setCurrentCyclesLeft(
+            (prevCurrentCyclesLeft) => prevCurrentCyclesLeft - 1
+          )
+        }
       }
     }
     if (currentCyclesLeft === 0) {
@@ -123,6 +129,7 @@ export default function Workout() {
     }
   }, [
     currentSecondsLeft,
+    currentMinutesLeft,
     currentCyclesLeft,
     currentTimerId,
     initialTimers.length,
