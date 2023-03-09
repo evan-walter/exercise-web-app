@@ -27,19 +27,32 @@ export default function Workout() {
 
   let countDown = useRef<any>(0)
 
-  // New helper function
-  function handleClickWorkoutButton() {
-    setIsFinished(false)
-    setIsStarted(true)
-    if (isStarted) {
-      setIsPaused((prevIsPaused) => !prevIsPaused)
-    }
-
+  function handleSetInterval() {
     countDown.current = setInterval(() => {
       setCurrentSecondsLeft(
         (prevCurrentSecondsLeft) => prevCurrentSecondsLeft - 1
       )
     }, 500)
+  }
+
+  function handlePauseTimer() {
+    clearInterval(countDown.current)
+    countDown.current = 0
+  }
+
+  function handleClickWorkoutButton() {
+    setIsFinished(false)
+    setIsStarted(true)
+    if (isStarted) {
+      setIsPaused((prevIsPaused) => !prevIsPaused)
+      if (isPaused) {
+        handleSetInterval()
+      } else {
+        handlePauseTimer()
+      }
+    } else {
+      handleSetInterval()
+    }
   }
 
   // New useEffect
@@ -106,14 +119,14 @@ export default function Workout() {
     resultIfIsPaused: string,
     resultIfIsFinished: string
   ) {
+    if (isFinished) {
+      return resultIfIsFinished
+    }
     if (!isStarted) {
       return resultIfIsNotStarted
     }
     if (isPaused) {
       return resultIfIsPaused
-    }
-    if (isFinished) {
-      return resultIfIsFinished
     }
     return resultIfIsStarted
   }
