@@ -13,8 +13,9 @@ export default function Workout() {
   const [inputMinutes, setInputMinutes] = useState(0)
   const [inputSeconds, setInputSeconds] = useState(initialSecondsLeft)
   const [initialTimers, setInitialTimers] = useState<any>([])
-  const [isCountingDown, setIsCountingDown] = useState(false)
+  const [isStarted, setIsStarted] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
+  const [isFinished, setIsFinished] = useState(false)
 
   // New useState declarations
   const [currentSecondsLeft, setCurrentSecondsLeft] =
@@ -27,8 +28,13 @@ export default function Workout() {
   let countDown = useRef<any>(0)
 
   // New helper function
-  function handleStartTimer() {
-    setIsCountingDown(true)
+  function handleClickWorkoutButton() {
+    setIsFinished(false)
+    setIsStarted(true)
+    if (isStarted) {
+      setIsPaused((prevIsPaused) => !prevIsPaused)
+    }
+
     countDown.current = setInterval(() => {
       setCurrentSecondsLeft(
         (prevCurrentSecondsLeft) => prevCurrentSecondsLeft - 1
@@ -42,18 +48,18 @@ export default function Workout() {
       setCurrentSecondsLeft(initialSecondsLeft)
       setCurrentTimerId((prevCurrentTimerId) => prevCurrentTimerId + 1)
       if (currentTimerId === initialTimers.length) {
-        console.log('test')
         setCurrentTimerId(1)
         setCurrentCyclesLeft(
           (prevCurrentCyclesLeft) => prevCurrentCyclesLeft - 1
         )
-        console.log(currentCyclesLeft)
       }
     }
     if (currentCyclesLeft === 0) {
       clearInterval(countDown.current)
       countDown.current = 0
       setCurrentCyclesLeft(inputCycles)
+      setIsFinished(true)
+      setIsStarted(false)
     }
   }, [
     currentSecondsLeft,
@@ -94,65 +100,26 @@ export default function Workout() {
     )
   }
 
-  function handleDisplayWorkoutButtonText() {
-    if (isCountingDown) {
-      return 'Pause'
-    } else if (isPaused) {
-      return 'Resume'
-    } else {
-      return 'Start'
+  function handleWorkoutButtonTextAndStyles(
+    resultIfIsNotStarted: string,
+    resultIfIsStarted: string,
+    resultIfIsPaused: string,
+    resultIfIsFinished: string
+  ) {
+    if (!isStarted) {
+      return resultIfIsNotStarted
     }
+    if (isPaused) {
+      return resultIfIsPaused
+    }
+    if (isFinished) {
+      return resultIfIsFinished
+    }
+    return resultIfIsStarted
   }
 
   function format(timeUnit: number) {
     return `${timeUnit >= 10 ? timeUnit : `0${timeUnit}`}`
-  }
-
-  // New JSX
-  if (false) {
-    return (
-      <>
-        <div className='flex flex-col gap-y-4'>
-          <div>
-            <button onClick={handleStartTimer}>Start Timer</button>
-          </div>
-          <div>Cycles Left: {currentCyclesLeft}</div>
-          <div
-            className={`${
-              currentTimerId === 3 ? 'border-amber-600' : 'border-slate-600'
-            } w-fit rounded-lg border p-2`}
-          >
-            <div>Timer Number: {3}</div>
-            <div>
-              Seconds Left:{' '}
-              {currentTimerId === 3 ? currentSecondsLeft : initialSecondsLeft}
-            </div>
-          </div>
-          <div
-            className={`${
-              currentTimerId === 2 ? 'border-amber-600' : 'border-slate-600'
-            } w-fit rounded-lg border p-2`}
-          >
-            <div>Timer Number: {2}</div>
-            <div>
-              Seconds Left:{' '}
-              {currentTimerId === 2 ? currentSecondsLeft : initialSecondsLeft}
-            </div>
-          </div>
-          <div
-            className={`${
-              currentTimerId === 1 ? 'border-amber-600' : 'border-slate-600'
-            } w-fit rounded-lg border p-2`}
-          >
-            <div>Timer Number: {1}</div>
-            <div>
-              Seconds Left:{' '}
-              {currentTimerId === 1 ? currentSecondsLeft : initialSecondsLeft}
-            </div>
-          </div>
-        </div>
-      </>
-    )
   }
 
   // Old JSX
@@ -160,12 +127,20 @@ export default function Workout() {
     <div className='flex flex-col gap-y-4'>
       {initialTimers.length > 0 ? (
         <button
-          className={`${
-            isCountingDown ? 'bg-yellow-600' : 'bg-green-600'
-          } mb-2 w-fit rounded-full py-2 px-4 text-lg font-semibold text-white`}
-          onClick={handleStartTimer}
+          className={`${handleWorkoutButtonTextAndStyles(
+            'bg-green-600',
+            'bg-yellow-600',
+            'bg-green-600',
+            'bg-green-600'
+          )} mb-2 w-fit rounded-full py-2 px-4 text-lg font-semibold text-white`}
+          onClick={handleClickWorkoutButton}
         >
-          {`${handleDisplayWorkoutButtonText()} Workout`}
+          {`${handleWorkoutButtonTextAndStyles(
+            'Start',
+            'Pause',
+            'Resume',
+            'Restart'
+          )} Workout`}
         </button>
       ) : null}
       <div className='flex flex-col gap-y-4 rounded-lg bg-slate-200 p-4 dark:bg-slate-800'>
