@@ -1,20 +1,23 @@
 import { useState, useRef, useEffect } from 'react'
 
 const initialCyclesLeft = 3
-const initialMinutesLeft = 3
+const initialMinutesLeft = 0
 const initialSecondsLeft = 3
 
 export default function Workout() {
+  // Old useState declarations
   const [isEditingCycles, setIsEditingCycles] = useState(false)
   const [isCreatingTimer, setIsCreatingTimer] = useState(false)
   const [inputCycles, setInputCycles] = useState(initialCyclesLeft)
   const [inputTitle, setInputTitle] = useState('Low')
-  const [inputMinutes, setInputMinutes] = useState(initialMinutesLeft)
+  const [inputMinutes, setInputMinutes] = useState(0)
   const [inputSeconds, setInputSeconds] = useState(initialSecondsLeft)
   const [initialTimers, setInitialTimers] = useState<any>([])
   const [isStarted, setIsStarted] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [isFinished, setIsFinished] = useState(false)
+
+  // New useState declarations
   const [currentSecondsLeft, setCurrentSecondsLeft] =
     useState(initialSecondsLeft)
   const [currentMinutesLeft, setCurrentMinutesLeft] =
@@ -24,6 +27,62 @@ export default function Workout() {
 
   let countDown = useRef<any>(0)
 
+  function handleSetInterval() {
+    countDown.current = setInterval(() => {
+      setCurrentSecondsLeft(
+        (prevCurrentSecondsLeft) => prevCurrentSecondsLeft - 1
+      )
+    }, 500)
+  }
+
+  function handlePauseTimer() {
+    clearInterval(countDown.current)
+    countDown.current = 0
+  }
+
+  function handleClickWorkoutButton() {
+    setIsFinished(false)
+    setIsStarted(true)
+    if (isStarted) {
+      setIsPaused((prevIsPaused) => !prevIsPaused)
+      if (isPaused) {
+        handleSetInterval()
+      } else {
+        handlePauseTimer()
+      }
+    } else {
+      handleSetInterval()
+    }
+  }
+
+  // New useEffect
+  useEffect(() => {
+    if (currentSecondsLeft === 0) {
+      setCurrentSecondsLeft(initialSecondsLeft)
+      setCurrentTimerId((prevCurrentTimerId) => prevCurrentTimerId + 1)
+      if (currentTimerId === initialTimers.length) {
+        setCurrentTimerId(1)
+        setCurrentCyclesLeft(
+          (prevCurrentCyclesLeft) => prevCurrentCyclesLeft - 1
+        )
+      }
+    }
+    if (currentCyclesLeft === 0) {
+      clearInterval(countDown.current)
+      countDown.current = 0
+      setCurrentCyclesLeft(inputCycles)
+      setIsFinished(true)
+      setIsStarted(false)
+    }
+  }, [
+    currentSecondsLeft,
+    currentCyclesLeft,
+    currentTimerId,
+    initialTimers.length,
+    inputCycles,
+  ])
+
+  // Old helper functions
   function handleCreateTimer() {
     setIsCreatingTimer((prevIsCreatingTimer) => !prevIsCreatingTimer)
     if (isCreatingTimer) {
@@ -54,35 +113,7 @@ export default function Workout() {
     )
   }
 
-  function handleSetInterval() {
-    countDown.current = setInterval(() => {
-      setCurrentSecondsLeft(
-        (prevCurrentSecondsLeft) => prevCurrentSecondsLeft - 1
-      )
-    }, 10)
-  }
-
-  function handleClearInterval() {
-    clearInterval(countDown.current)
-    countDown.current = 0
-  }
-
-  function handleClickWorkoutButton() {
-    setIsFinished(false)
-    setIsStarted(true)
-    if (isStarted) {
-      setIsPaused((prevIsPaused) => !prevIsPaused)
-      if (isPaused) {
-        handleSetInterval()
-      } else {
-        handleClearInterval()
-      }
-    } else {
-      handleSetInterval()
-    }
-  }
-
-  function handleWorkoutButtonTextOrStyles(
+  function handleWorkoutButtonTextAndStyles(
     resultIfIsNotStarted: string,
     resultIfIsStarted: string,
     resultIfIsPaused: string,
@@ -104,43 +135,12 @@ export default function Workout() {
     return `${timeUnit >= 10 ? timeUnit : `0${timeUnit}`}`
   }
 
-  useEffect(() => {
-    if (currentSecondsLeft === 0) {
-      setCurrentSecondsLeft(59)
-      setCurrentMinutesLeft(
-        (prevCurrentMinutesLeft) => prevCurrentMinutesLeft - 1
-      )
-      if (currentMinutesLeft === 0) {
-        setCurrentSecondsLeft(initialSecondsLeft)
-        setCurrentTimerId((prevCurrentTimerId) => prevCurrentTimerId + 1)
-        if (currentTimerId === initialTimers.length) {
-          setCurrentTimerId(1)
-          setCurrentCyclesLeft(
-            (prevCurrentCyclesLeft) => prevCurrentCyclesLeft - 1
-          )
-        }
-      }
-    }
-    if (currentCyclesLeft === 0) {
-      handleClearInterval()
-      setCurrentCyclesLeft(inputCycles)
-      setIsFinished(true)
-      setIsStarted(false)
-    }
-  }, [
-    currentSecondsLeft,
-    currentMinutesLeft,
-    currentCyclesLeft,
-    currentTimerId,
-    initialTimers.length,
-    inputCycles,
-  ])
-
+  // Old JSX
   return (
     <div className='flex flex-col gap-y-4'>
       {initialTimers.length > 0 ? (
         <button
-          className={`${handleWorkoutButtonTextOrStyles(
+          className={`${handleWorkoutButtonTextAndStyles(
             'bg-green-600',
             'bg-yellow-600',
             'bg-green-600',
@@ -148,7 +148,7 @@ export default function Workout() {
           )} mb-2 w-fit rounded-full py-2 px-4 text-lg font-semibold text-white`}
           onClick={handleClickWorkoutButton}
         >
-          {`${handleWorkoutButtonTextOrStyles(
+          {`${handleWorkoutButtonTextAndStyles(
             'Start',
             'Pause',
             'Resume',
